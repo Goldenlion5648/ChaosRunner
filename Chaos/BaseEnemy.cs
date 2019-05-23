@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ChaosRunner
 {
-    class BaseEnemy : Character, IEnemy
+    public class BaseEnemy : Character, IEnemy
     {
 
 

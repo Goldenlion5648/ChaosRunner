@@ -59,7 +59,7 @@ namespace ChaosRunner
 
         int enemyStartingX = 0;
 
-        int enemyLimit = 4;
+        int enemyLimit = 5;
 
         bool hasDoneStartOfGameCode = false;
         int enemiesMovingCurrently = 0;
@@ -113,9 +113,9 @@ namespace ChaosRunner
 
             for (int i = 0; i < numOfEachEnemyType; ++i)
             {
-                tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX,
+                tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
-                tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX,
+                tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3, defaultCharacterHeight * 2 / 3));
 
                 int tempRandom = rand.Next(1, 3);
@@ -156,10 +156,11 @@ namespace ChaosRunner
 
             kb = Keyboard.GetState();
             startOfGameCode();
+            userControls();
+
 
             if (isGamePaused == false)
             {
-                userControls();
                 enemyMovement();
                 sideScroll();
                 checkEnemyPositions();
@@ -167,6 +168,7 @@ namespace ChaosRunner
             }
 
 
+            oldkb = kb;
             base.Update(gameTime);
         }
 
@@ -174,7 +176,17 @@ namespace ChaosRunner
         {
             isPressingKey = false;
 
+            if (kb.IsKeyDown(Keys.P) && oldkb.IsKeyUp(Keys.P))
+            {
+                isGamePaused = !isGamePaused;
+            }
+
+            if(isGamePaused == true)
+            {
+                return;
+            }
             #region Movement
+
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
             {
                 isPressingKey = true;
@@ -226,10 +238,7 @@ namespace ChaosRunner
             }
             #endregion
 
-            if (kb.IsKeyDown(Keys.P) && oldkb.IsKeyUp(Keys.P))
-            {
-                isGamePaused = !isGamePaused;
-            }
+           
 
         }
 
@@ -301,13 +310,20 @@ namespace ChaosRunner
 
         }
 
+        public void setEnemyStartingPos(ref BaseEnemy enemyToMove)
+        {
+            enemyToMove.setRecX(enemyStartingX + rand.Next(10, 80));
+
+        }
+
         public void resetEnemies()
         {
             if(shouldEnemiesLoop)
             {
                 for (int i = 0; i < activeEnemies.Count; i++)
                 {
-                    activeEnemies[i].setRecX(enemyStartingX);
+                    //activeEnemies[i].setRecX(enemyStartingX + rand.Next(10, 80));
+                    setEnemyStartingPos(out activeEnemies[i]);
                     activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
                 }
 
