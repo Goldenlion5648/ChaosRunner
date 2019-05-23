@@ -55,6 +55,10 @@ namespace ChaosRunner
         {
             characterRec.Y += 1;
         }
+        public int getRecY()
+        {
+            return characterRec.Y;
+        }
         public Rectangle getRec()
         {
             return characterRec;

@@ -49,7 +49,9 @@ namespace ChaosRunner
 
         int enemyStartingX = 0;
 
-        int enemyCount = 4;
+        int enemyLimit = 4;
+
+        bool hasDoneStartOfGameCode = false;
 
 
 
@@ -202,20 +204,33 @@ namespace ChaosRunner
 
         public void startOfGameCode()
         {
-            for (int i = 0; i < enemiesList.Count; ++i)
+            //if(hasDoneStartOfGameCode == true)
+            //{
+            //    return;
+            //}
+            if (hasDoneStartOfGameCode == false)
             {
-                if (allObjectsList.Contains(enemiesList[i]) == false)
+                for (int i = 0; i < enemiesList.Count; ++i)
                 {
-                    allObjectsList.Add(enemiesList[i]);
+                    if (allObjectsList.Contains(enemiesList[i]) == false)
+                    {
+                        allObjectsList.Add(enemiesList[i]);
+                    }
                 }
-            }
 
-            for (int i = 0; i < collectibleObjectsList.Count; ++i)
-            {
-                if (allObjectsList.Contains(collectibleObjectsList[i]) == false)
+                for (int i = 0; i < collectibleObjectsList.Count; ++i)
                 {
-                    allObjectsList.Add(collectibleObjectsList[i]);
+                    if (allObjectsList.Contains(collectibleObjectsList[i]) == false)
+                    {
+                        allObjectsList.Add(collectibleObjectsList[i]);
+                    }
                 }
+
+                chooseEnemiesToMove();
+
+
+                hasDoneStartOfGameCode = true;
+
             }
         }
 
@@ -249,11 +264,30 @@ namespace ChaosRunner
             }
         }
 
+        public void chooseEnemiesToMove()
+        {
+            //int randomDecider;
+            //randomDecider = rand.Next(0, 10);
+            //for (int i = 0; i < enemyLimit; ++i)
+            //{
+            //    if (enemiesList[randomDecider].isMoving == false)
+            //    {
+            //        enemiesList[randomDecider].isMoving = true;
+            //    }
+            //    else
+            //    {
+            //        i--;
+            //    }
+            //}
+
+
+        }
+
         public void sideScroll()
         {
             for (int i = 0; i < enemiesList.Count; ++i)
             {
-                if (enemiesList[i].getRec().Right > 0)
+                if (enemiesList[i].getRec().Right > 0 && enemiesList[i].isMoving)
                 {
                     enemiesList[i].addToRecX(sideScrollSpeed);
                 }
@@ -281,6 +315,7 @@ namespace ChaosRunner
             {
                 enemiesList[i].drawCharater(spriteBatch);
                 spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth - 300, 300 + i * 20), Color.Black);
+                spriteBatch.DrawString(scoreFont, "Y: " + enemiesList[i].getRecY(), new Vector2(screenWidth - 200, 300 + i * 20), Color.Black);
                 //spriteBatch.DrawString(testFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
             }

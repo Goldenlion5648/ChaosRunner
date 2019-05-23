@@ -32,34 +32,37 @@ namespace ChaosRunner
 
         public override void Move(Rectangle boundsRec)
         {
-            if (isMovingUp)
+            if (characterRec.Intersects(boundsRec) && isMoving)
             {
-                for (int i = 0; i < speed; i++)
+                if (isMovingUp)
                 {
-                    if (characterRec.Bottom < boundsRec.Bottom)
+                    for (int i = 0; i < speed; i++)
                     {
-                        characterRec.Y += 1;
-                    }
-                    else
-                    {
-                        isMovingUp = false;
-                    }
+                        if (characterRec.Bottom < boundsRec.Bottom)
+                        {
+                            characterRec.Y += 1;
+                        }
+                        else
+                        {
+                            isMovingUp = false;
+                        }
 
+                    }
                 }
-            }
-            else
-            {
-                for (int i = 0; i < speed; i++)
+                else
                 {
-                    if (characterRec.Y > boundsRec.Top)
+                    for (int i = 0; i < speed; i++)
                     {
-                        characterRec.Y -= 1;
-                    }
-                    else
-                    {
-                        isMovingUp = true;
-                    }
+                        if (characterRec.Y > boundsRec.Top)
+                        {
+                            characterRec.Y -= 1;
+                        }
+                        else
+                        {
+                            isMovingUp = true;
+                        }
 
+                    }
                 }
             }
         }

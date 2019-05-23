@@ -12,7 +12,6 @@ namespace ChaosRunner
     class BaseEnemy : Character, IEnemy
     {
 
-        private int typeNum = 0;
 
         public BaseEnemy(Texture2D tex, Rectangle rec) : base(tex, rec)
         {
