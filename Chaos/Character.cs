@@ -13,6 +13,8 @@ namespace ChaosRunner
     {
         public Texture2D texture;
         public Rectangle characterRec;
+        public int speed { get; set; }
+        public bool isMoving{ get; set; }
 
         public Character()
         {
@@ -64,16 +66,12 @@ namespace ChaosRunner
 
         public virtual void drawCharater(SpriteBatch sb)
         {
-            sb.Begin();
             sb.Draw(texture, characterRec, Color.White);
-            sb.End();
         }
 
         public void drawCharater(SpriteBatch sb, Color color)
         {
-            sb.Begin();
             sb.Draw(texture, characterRec, color);
-            sb.End();
         }
 
     }

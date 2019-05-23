@@ -17,13 +17,19 @@ namespace ChaosRunner
         {
             this.texture = tex;
             this.characterRec = rec;
-            
+
 
         }
 
         public void Move()
         {
-            throw new NotImplementedException();
+
+
+        }
+
+        public override void drawCharater(SpriteBatch sb)
+        {
+            sb.Draw(texture, characterRec, Color.Black);
         }
     }
 }

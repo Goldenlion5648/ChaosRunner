@@ -39,9 +39,9 @@ namespace ChaosRunner
         int characterHeight = 50;
         int characterWidth = 50;
 
-        int movementSpeed = 6;
+        int playerSpeed = 8;
 
-        int sideScrollSpeed = 7;
+        int sideScrollSpeed = -7;
 
         int score = 0;
 
@@ -94,13 +94,17 @@ namespace ChaosRunner
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
             Bouncer tempBouncer;
+            Missile tempMissile;
 
             for (int i = 0; i < numOfEachEnemyType; ++i)
             {
                 tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX,
-                (screenHeight / 2) + rand.Next(10, 200), characterWidth, characterHeight));
-                bouncerList.Add(tempBouncer);
-                enemiesList.Add(bouncerList[i]);
+                rand.Next(10, screenHeight - characterHeight), characterWidth, characterHeight));
+                tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX,
+                rand.Next(10, screenHeight - characterHeight), characterWidth * 3, characterHeight * 3 / 2));
+                //bouncerList.Add(tempBouncer);
+                enemiesList.Add(tempBouncer);
+                enemiesList.Add(tempMissile);
 
             }
 
@@ -146,7 +150,7 @@ namespace ChaosRunner
         {
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
             {
-                for (int i = 0; i < movementSpeed; i++)
+                for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Top - 1 >= screenEncapsulation.Top)
                     {
@@ -157,7 +161,7 @@ namespace ChaosRunner
 
             if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down))
             {
-                for (int i = 0; i < movementSpeed; i++)
+                for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
                     {
@@ -167,7 +171,7 @@ namespace ChaosRunner
             }
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
-                for (int i = 0; i < movementSpeed; i++)
+                for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Left - 1 >= screenEncapsulation.Left)
                     {
@@ -177,7 +181,7 @@ namespace ChaosRunner
             }
             if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
-                for (int i = 0; i < movementSpeed; i++)
+                for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
                     {
@@ -243,10 +247,16 @@ namespace ChaosRunner
             {
                 if (enemiesList[i].getRec().Right > 0)
                 {
-                    enemiesList[i].addToRecX(-1 * sideScrollSpeed);
+                    enemiesList[i].addToRecX(sideScrollSpeed);
                 }
             }
-
+            for (int i = 0; i < (-1 * sideScrollSpeed / 2); ++i)
+            {
+                if (player.getRecX() > 0)
+                {
+                    player.addToRecX(-1);
+                }
+            }
         }
 
         /// <summary>
@@ -256,9 +266,9 @@ namespace ChaosRunner
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            player.drawCharater(spriteBatch, Color.Red);
             spriteBatch.Begin();
+            player.drawCharater(spriteBatch, Color.Red);
+
             for (int i = 0; i < enemiesList.Count; i++)
             {
                 enemiesList[i].drawCharater(spriteBatch);
@@ -272,8 +282,9 @@ namespace ChaosRunner
             spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
 
             // TODO: Add your drawing code here
-            spriteBatch.End();
 
+
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }

@@ -17,7 +17,7 @@ namespace ChaosRunner
         private bool isMovingUp = true;
         //private int speed;
 
-        public int speed { get; set; }
+        //public int speed { get; set; }
 
         public Bouncer(Texture2D tex, Rectangle rec) : base(tex, rec)
         {
@@ -30,8 +30,6 @@ namespace ChaosRunner
 
         public override void Move(Rectangle boundsRec)
         {
-            // this.characterRec.X 
-            //int moveCounter = 0;
             if (isMovingUp)
             {
                 for (int i = 0; i < speed; i++)

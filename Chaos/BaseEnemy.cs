@@ -18,6 +18,7 @@ namespace ChaosRunner
         {
             this.texture = tex;
             this.characterRec = rec;
+            this.isMoving = false;
 
 
         }
@@ -37,7 +38,7 @@ namespace ChaosRunner
 
         public virtual void Move(Rectangle boundsRec)
         {
-            characterRec.X += 1;
+            //characterRec.X += 1;
         }
     }
 }
