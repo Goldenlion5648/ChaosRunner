@@ -257,7 +257,10 @@ namespace ChaosRunner
                 spriteBatch.DrawString(testFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
             }
+            //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
+            spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
+            spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
 
             // TODO: Add your drawing code here
             spriteBatch.End();
