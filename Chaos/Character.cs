@@ -25,6 +25,7 @@ namespace ChaosRunner
         {
             texture = tex;
             characterRec = rec;
+            isMoving = false;
         }
         public void setRec(Rectangle newValue)
         {

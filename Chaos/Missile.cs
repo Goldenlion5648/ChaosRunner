@@ -17,14 +17,25 @@ namespace ChaosRunner
         {
             this.texture = tex;
             this.characterRec = rec;
+            speed = 5;
 
 
         }
 
-        public void Move()
+
+
+        public override void Move(Rectangle boundsRec)
         {
-
-
+            if (isMoving)
+            {
+                for (int i = 0; i < speed; ++i)
+                {
+                    if (characterRec.Right > boundsRec.Left)
+                    {
+                        addToRecX(-1);
+                    }
+                }
+            }
         }
 
         public override void drawCharater(SpriteBatch sb)

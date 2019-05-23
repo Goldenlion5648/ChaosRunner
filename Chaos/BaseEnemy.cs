@@ -22,6 +22,7 @@ namespace ChaosRunner
 
         }
 
+
         public bool IsCollidingTopOrBottom(Rectangle boundsRec)
         {
             bool isColliding = false;
@@ -37,7 +38,7 @@ namespace ChaosRunner
 
         public virtual void Move(Rectangle boundsRec)
         {
-            //characterRec.X += 1;
+            //characterRec.X -= 10;
         }
     }
 }

@@ -31,7 +31,7 @@ namespace ChaosRunner
 
         Rectangle screenEncapsulation;
 
-        System.Random rand = new Random();
+        System.Random rand = new Random(314);
 
         int screenHeight = 800;
         int screenWidth = 1280;
@@ -39,9 +39,13 @@ namespace ChaosRunner
         int characterHeight = 50;
         int characterWidth = 50;
 
-        int playerSpeed = 10;
+        int playerSpeed = 7;
+        bool isPressingKey = false;
+
 
         int sideScrollSpeed = -7;
+
+        bool isGamePaused = false;
 
         int score = 0;
 
@@ -52,7 +56,8 @@ namespace ChaosRunner
         int enemyLimit = 4;
 
         bool hasDoneStartOfGameCode = false;
-
+        int enemiesMovingCurrently = 0;
+        int randomDecider;
 
 
 
@@ -145,21 +150,28 @@ namespace ChaosRunner
 
             kb = Keyboard.GetState();
             startOfGameCode();
-            userControls();
-            enemyMovement();
-            sideScroll();
+
+            if (isGamePaused == false)
+            {
+                userControls();
+                enemyMovement();
+                sideScroll();
+                endOfGameCode();
+            }
 
 
-
-
-            endOfGameCode();
             base.Update(gameTime);
         }
 
         public void userControls()
         {
+             isPressingKey = false;
+
+            #region Movement
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
             {
+                 isPressingKey = true;
+
                 for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Top - 1 >= screenEncapsulation.Top)
@@ -171,6 +183,8 @@ namespace ChaosRunner
 
             if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down))
             {
+                isPressingKey = true;
+
                 for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
@@ -181,7 +195,9 @@ namespace ChaosRunner
             }
             if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
             {
-                for (int i = 0; i < playerSpeed; i++)
+                isPressingKey = true;
+
+                for (int i = 0; i < playerSpeed + 2; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Left - 1 >= screenEncapsulation.Left)
                     {
@@ -191,6 +207,8 @@ namespace ChaosRunner
             }
             if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
             {
+                isPressingKey = true;
+
                 for (int i = 0; i < playerSpeed; i++)
                 {
                     if (checkCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
@@ -198,6 +216,12 @@ namespace ChaosRunner
                         player.addToRecX(1);
                     }
                 }
+            }
+            #endregion
+
+            if (kb.IsKeyDown(Keys.P) && oldkb.IsKeyUp(Keys.P))
+            {
+                isGamePaused = !isGamePaused;
             }
 
         }
@@ -266,20 +290,18 @@ namespace ChaosRunner
 
         public void chooseEnemiesToMove()
         {
-            //int randomDecider;
-            //randomDecider = rand.Next(0, 10);
-            //for (int i = 0; i < enemyLimit; ++i)
-            //{
-            //    if (enemiesList[randomDecider].isMoving == false)
-            //    {
-            //        enemiesList[randomDecider].isMoving = true;
-            //    }
-            //    else
-            //    {
-            //        i--;
-            //    }
-            //}
+            //enemiesList[3].isMoving = true;
 
+            while (enemiesMovingCurrently < enemyLimit)
+            {
+                randomDecider = rand.Next(0, 10);
+                if(enemiesList[randomDecider].isMoving == false)
+                {
+                    enemiesList[randomDecider].isMoving = true;
+                    enemiesMovingCurrently++;
+
+                }
+            }
 
         }
 
@@ -292,11 +314,15 @@ namespace ChaosRunner
                     enemiesList[i].addToRecX(sideScrollSpeed);
                 }
             }
-            for (int i = 0; i < (-1 * sideScrollSpeed / 2 + 2); ++i)
+
+            if (isPressingKey == false)
             {
-                if (player.getRecX() > 0)
+                for (int i = 0; i < (-1 * sideScrollSpeed / 2 + 2); ++i)
                 {
-                    player.addToRecX(-1);
+                    if (player.getRecX() > 0)
+                    {
+                        player.addToRecX(-1);
+                    }
                 }
             }
         }

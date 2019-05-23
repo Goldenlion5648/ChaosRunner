@@ -26,6 +26,7 @@ namespace ChaosRunner
             this.texture = tex;
             this.characterRec = rec;
             speed = 5;
+            
 
 
         }
