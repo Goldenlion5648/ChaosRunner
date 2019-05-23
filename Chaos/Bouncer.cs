@@ -14,7 +14,9 @@ namespace ChaosRunner
 
         private int typeNum = 0;
         //private int speed = 5;
-        private bool isMovingUp = true;
+        //private bool isMovingUp = true;
+
+        public bool isMovingUp { get; set; }
         //private int speed;
 
         //public int speed { get; set; }

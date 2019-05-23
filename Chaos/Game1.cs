@@ -31,7 +31,7 @@ namespace ChaosRunner
 
         Rectangle screenEncapsulation;
 
-        System.Random rand = new Random(30);
+        System.Random rand = new Random();
 
         int screenHeight = 800;
         int screenWidth = 1280;
@@ -39,7 +39,7 @@ namespace ChaosRunner
         int characterHeight = 50;
         int characterWidth = 50;
 
-        int playerSpeed = 8;
+        int playerSpeed = 10;
 
         int sideScrollSpeed = -7;
 
@@ -48,6 +48,8 @@ namespace ChaosRunner
         int gameClock = 0;
 
         int enemyStartingX = 0;
+
+        int enemyCount = 4;
 
 
 
@@ -102,6 +104,12 @@ namespace ChaosRunner
                 rand.Next(10, screenHeight - characterHeight), characterWidth, characterHeight));
                 tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX,
                 rand.Next(10, screenHeight - characterHeight), characterWidth * 3, characterHeight * 3 / 2));
+
+                int tempRandom = rand.Next(1, 3);
+                if(tempRandom == 1)
+                {
+                    tempBouncer.isMovingUp = true;
+                }
                 //bouncerList.Add(tempBouncer);
                 enemiesList.Add(tempBouncer);
                 enemiesList.Add(tempMissile);
@@ -250,7 +258,7 @@ namespace ChaosRunner
                     enemiesList[i].addToRecX(sideScrollSpeed);
                 }
             }
-            for (int i = 0; i < (-1 * sideScrollSpeed / 2); ++i)
+            for (int i = 0; i < (-1 * sideScrollSpeed / 2 + 2); ++i)
             {
                 if (player.getRecX() > 0)
                 {
