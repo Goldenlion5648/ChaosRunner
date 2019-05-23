@@ -18,7 +18,7 @@ namespace ChaosRunner
 
         public Character()
         {
-
+            //texture = Content.Load<Texture2D>("buttonOutline");
         }
 
         public Character(Texture2D tex, Rectangle rec)

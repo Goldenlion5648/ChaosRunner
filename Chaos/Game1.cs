@@ -24,20 +24,26 @@ namespace ChaosRunner
         SpriteFont testFont, scoreFont;
         List<Bouncer> bouncerList = new List<Bouncer>();
         List<Character> collectibleObjectsList = new List<Character>(1);
-        List<BaseEnemy> enemiesList = new List<BaseEnemy>(1);
+        List<BaseEnemy> enemiesList = new List<BaseEnemy>();
+        List<BaseEnemy> activeEnemies = new List<BaseEnemy>(1);
         List<Character> allObjectsList = new List<Character>(1);
 
         int numOfEachEnemyType = 5;
 
         Rectangle screenEncapsulation;
 
-        System.Random rand = new Random(314);
+        System.Random rand = new Random(4);
 
         int screenHeight = 800;
         int screenWidth = 1280;
 
-        int characterHeight = 50;
-        int characterWidth = 50;
+        bool shouldEnemiesLoop = false;
+
+        int defaultCharacterHeight = 50;
+        int defaultCharacterWidth = 50;
+
+        int currentCharacterHeight = 50;
+        int currentCharacterWidth = 50;
 
         int playerSpeed = 7;
         bool isPressingKey = false;
@@ -97,8 +103,8 @@ namespace ChaosRunner
 
             enemyStartingX = screenWidth + (screenWidth / 10);
 
-            player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (characterWidth / 2),
-                screenHeight / 2 - characterHeight / 2, characterWidth, characterHeight));
+            player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (defaultCharacterWidth / 2),
+                screenHeight / 2 - defaultCharacterHeight / 2, defaultCharacterWidth, defaultCharacterHeight));
 
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
@@ -108,12 +114,12 @@ namespace ChaosRunner
             for (int i = 0; i < numOfEachEnemyType; ++i)
             {
                 tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX,
-                rand.Next(10, screenHeight - characterHeight), characterWidth, characterHeight));
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
                 tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX,
-                rand.Next(10, screenHeight - characterHeight), characterWidth * 3, characterHeight * 3 / 2));
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3, defaultCharacterHeight * 2 / 3));
 
                 int tempRandom = rand.Next(1, 3);
-                if(tempRandom == 1)
+                if (tempRandom == 1)
                 {
                     tempBouncer.isMovingUp = true;
                 }
@@ -156,6 +162,7 @@ namespace ChaosRunner
                 userControls();
                 enemyMovement();
                 sideScroll();
+                checkEnemyPositions();
                 endOfGameCode();
             }
 
@@ -165,12 +172,12 @@ namespace ChaosRunner
 
         public void userControls()
         {
-             isPressingKey = false;
+            isPressingKey = false;
 
             #region Movement
             if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
             {
-                 isPressingKey = true;
+                isPressingKey = true;
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
@@ -279,25 +286,62 @@ namespace ChaosRunner
 
         }
 
+        public void checkEnemyPositions()
+        {
+            shouldEnemiesLoop = true;
+            for (int i = 0; i < enemyLimit; ++i)
+            {
+                if (shouldEnemiesLoop == true && activeEnemies[i].getRec().Right > screenEncapsulation.Left)
+                {
+                    shouldEnemiesLoop = false;
+                    return;
+                }
+            }
+            resetEnemies();
+
+        }
+
+        public void resetEnemies()
+        {
+            if(shouldEnemiesLoop)
+            {
+                for (int i = 0; i < activeEnemies.Count; i++)
+                {
+                    activeEnemies[i].setRecX(enemyStartingX);
+                    activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
+                }
+
+                chooseEnemiesToMove();
+            }
+        }
+
         public void enemyMovement()
         {
             //wallBouncer.Move(screenEncapsulation);
-            for (int i = 0; i < enemiesList.Count; ++i)
+            for (int i = 0; i < activeEnemies.Count; ++i)
             {
-                enemiesList[i].Move(screenEncapsulation);
+                activeEnemies[i].Move(screenEncapsulation);
             }
         }
 
         public void chooseEnemiesToMove()
         {
             //enemiesList[3].isMoving = true;
+            enemiesMovingCurrently = 0;
+            for (int i = 0; i < activeEnemies.Count;)
+            {
+                activeEnemies[i].isMoving = false;
+                activeEnemies.RemoveAt(i);
+
+            }
 
             while (enemiesMovingCurrently < enemyLimit)
             {
                 randomDecider = rand.Next(0, 10);
-                if(enemiesList[randomDecider].isMoving == false)
+                if (enemiesList[randomDecider].isMoving == false)
                 {
                     enemiesList[randomDecider].isMoving = true;
+                    activeEnemies.Add(enemiesList[randomDecider]);
                     enemiesMovingCurrently++;
 
                 }
@@ -307,11 +351,11 @@ namespace ChaosRunner
 
         public void sideScroll()
         {
-            for (int i = 0; i < enemiesList.Count; ++i)
+            for (int i = 0; i < activeEnemies.Count; ++i)
             {
-                if (enemiesList[i].getRec().Right > 0 && enemiesList[i].isMoving)
+                if (activeEnemies[i].getRec().Right > 0 && activeEnemies[i].isMoving)
                 {
-                    enemiesList[i].addToRecX(sideScrollSpeed);
+                    activeEnemies[i].addToRecX(sideScrollSpeed);
                 }
             }
 
