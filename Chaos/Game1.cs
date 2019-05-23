@@ -17,15 +17,17 @@ namespace ChaosRunner
 
         Character player;
         //Bouncer wallBouncer;
-        List<Bouncer> bouncerList= new List<Bouncer>(5);
+
 
 
         KeyboardState kb, oldkb;
         SpriteFont testFont, scoreFont;
-
+        List<Bouncer> bouncerList = new List<Bouncer>();
         List<Character> collectibleObjectsList = new List<Character>(1);
         List<BaseEnemy> enemiesList = new List<BaseEnemy>(1);
         List<Character> allObjectsList = new List<Character>(1);
+
+        int numOfEachEnemyType = 5;
 
         Rectangle screenEncapsulation;
 
@@ -45,9 +47,9 @@ namespace ChaosRunner
 
         int gameClock = 0;
 
-        int enemyStartingX =0;
+        int enemyStartingX = 0;
 
-        
+
 
 
         public Game1()
@@ -83,6 +85,7 @@ namespace ChaosRunner
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
             enemyStartingX = screenWidth + (screenWidth / 10);
 
             player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (characterWidth / 2),
@@ -90,11 +93,13 @@ namespace ChaosRunner
 
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
+            Bouncer tempBouncer;
 
-            for (int i = 0; i < bouncerList.Count; ++i)
+            for (int i = 0; i < numOfEachEnemyType; ++i)
             {
-                bouncerList[i] = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX,
+                tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX,
                 (screenHeight / 2) + rand.Next(10, 200), characterWidth, characterHeight));
+                bouncerList.Add(tempBouncer);
                 enemiesList.Add(bouncerList[i]);
 
             }
@@ -128,6 +133,7 @@ namespace ChaosRunner
             startOfGameCode();
             userControls();
             enemyMovement();
+            sideScroll();
 
 
 
@@ -235,7 +241,10 @@ namespace ChaosRunner
         {
             for (int i = 0; i < enemiesList.Count; ++i)
             {
-                enemiesList[i].addToRecX(-1 * sideScrollSpeed);
+                if (enemiesList[i].getRec().Right > 0)
+                {
+                    enemiesList[i].addToRecX(-1 * sideScrollSpeed);
+                }
             }
 
         }
@@ -253,13 +262,13 @@ namespace ChaosRunner
             for (int i = 0; i < enemiesList.Count; i++)
             {
                 enemiesList[i].drawCharater(spriteBatch);
-                spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth  -300, screenHeight -300), Color.Black);
-                spriteBatch.DrawString(testFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
+                spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth - 300, 300 + i * 20), Color.Black);
+                //spriteBatch.DrawString(testFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
             }
             //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
-            spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
+            spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 280), Color.Black);
             spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
 
             // TODO: Add your drawing code here
