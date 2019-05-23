@@ -310,9 +310,11 @@ namespace ChaosRunner
 
         }
 
-        public void setEnemyStartingPos(ref BaseEnemy enemyToMove)
+        public void setEnemyStartingPos(ref List<BaseEnemy> enemyToMove, int index)
         {
-            enemyToMove.setRecX(enemyStartingX + rand.Next(10, 80));
+            enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 80));
+            enemyToMove[index].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
+
 
         }
 
@@ -323,8 +325,8 @@ namespace ChaosRunner
                 for (int i = 0; i < activeEnemies.Count; i++)
                 {
                     //activeEnemies[i].setRecX(enemyStartingX + rand.Next(10, 80));
-                    setEnemyStartingPos(out activeEnemies[i]);
-                    activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
+                    setEnemyStartingPos(ref activeEnemies, i);
+                    //activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
                 }
 
                 chooseEnemiesToMove();
