@@ -23,16 +23,20 @@ namespace ChaosRunner
         KeyboardState kb, oldkb;
         SpriteFont testFont, scoreFont;
         List<Bouncer> bouncerList = new List<Bouncer>();
-        List<Character> collectibleObjectsList = new List<Character>(1);
+        List<BaseCollectible> collectibleObjectsList = new List<BaseCollectible>();
         List<BaseEnemy> enemiesList = new List<BaseEnemy>();
         List<BaseEnemy> activeEnemies = new List<BaseEnemy>(1);
         List<Character> allObjectsList = new List<Character>(1);
+
+        List<Character> backgroundCharacterList = new List<Character>(6);
+        Texture2D[] backgroundImages = new Texture2D[6];
+
 
         int numOfEachEnemyType = 5;
 
         Rectangle screenEncapsulation;
 
-        System.Random rand = new Random(4);
+        Random rand = new Random(4);
 
         int screenHeight = 800;
         int screenWidth = 1280;
@@ -47,6 +51,8 @@ namespace ChaosRunner
 
         int playerSpeed = 7;
         bool isPressingKey = false;
+
+        int maxCollectiblesOnScreen = 3;
 
 
         int sideScrollSpeed = -7;
@@ -106,12 +112,36 @@ namespace ChaosRunner
             player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (defaultCharacterWidth / 2),
                 screenHeight / 2 - defaultCharacterHeight / 2, defaultCharacterWidth, defaultCharacterHeight));
 
+            backgroundImages[0] = Content.Load<Texture2D>("redOrange");
+            backgroundImages[1] = Content.Load<Texture2D>("orangeYellow");
+            backgroundImages[2] = Content.Load<Texture2D>("yellowGreen");
+            backgroundImages[3] = Content.Load<Texture2D>("greenBlue");
+            backgroundImages[4] = Content.Load<Texture2D>("bluePurple");
+            backgroundImages[5] = Content.Load<Texture2D>("purpleRed");
+
+            for (int i = 0; i < 6; i++)
+            {
+                backgroundCharacterList.Add(null);
+                backgroundCharacterList[i] = new Character(backgroundImages[i], new Rectangle(1400 * i, 0, 1400, screenHeight));
+
+            }
+
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
+
+            EnemyDecreaser tempEnemyDecreaser;
+
+
+            for (int i = 0; i < maxCollectiblesOnScreen; i++)
+            {
+                tempEnemyDecreaser = new EnemyDecreaser(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
+            }
+
+
             Bouncer tempBouncer;
             MiniBouncer tempMiniBouncer;
             Missile tempMissile;
-
             int tempRandom = 1;
             for (int i = 0; i < numOfEachEnemyType; ++i)
             {
@@ -170,6 +200,7 @@ namespace ChaosRunner
 
             if (isGamePaused == false)
             {
+                backgroundLogic();
                 enemyMovement();
                 sideScroll();
                 //checkEnemyPositions();
@@ -302,6 +333,26 @@ namespace ChaosRunner
 
             return didCollide;
 
+        }
+
+        public void backgroundLogic()
+        {
+            for (int i = 0; i < backgroundCharacterList.Count; i++)
+            {
+                backgroundCharacterList[i].addToRecX(-10);
+                if(backgroundCharacterList[i].getRec().Right < 0)
+                {
+                    if (i == 0)
+                    {
+                        backgroundCharacterList[i].setRecX(backgroundCharacterList[backgroundCharacterList.Count - 1].getRec().Right - 10);
+                    }
+                    else
+                    {
+                        backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
+
+                    }
+                }
+            }
         }
 
         //public void checkEnemyPositions()
@@ -440,8 +491,20 @@ namespace ChaosRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.PaleVioletRed);
             spriteBatch.Begin();
+
+            for (int i = 0; i < backgroundCharacterList.Count; i++)
+            {
+                backgroundCharacterList[i].drawCharater(spriteBatch);
+
+            }
+
+            for (int i = 0; i < backgroundCharacterList.Count; i++)
+            {
+                spriteBatch.DrawString(scoreFont, "backgroundPos: " + backgroundCharacterList[i].getRecX(), new Vector2(200, 300 + i * 20), Color.Black);
+
+            }
             player.drawCharater(spriteBatch, Color.Red);
 
             for (int i = 0; i < enemiesList.Count; i++)

@@ -69,6 +69,11 @@ namespace ChaosRunner
             return characterRec.X;
         }
 
+        public void changeImage(Texture2D newTex)
+        {
+            texture = newTex;
+        }
+
         public virtual void drawCharater(SpriteBatch sb)
         {
             sb.Draw(texture, characterRec, Color.White);
