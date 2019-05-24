@@ -42,7 +42,7 @@ namespace ChaosRunner
         int screenHeight = 800;
         int screenWidth = 1280;
 
-        bool shouldEnemiesLoop = false;
+        //bool shouldEnemiesLoop = false;
 
         int defaultCharacterHeight = 50;
         int defaultCharacterWidth = 50;
@@ -50,9 +50,12 @@ namespace ChaosRunner
         int currentCharacterHeight = 50;
         int currentCharacterWidth = 50;
 
+        bool didAnimate = true;
+
         int playerSpeed = 7;
         bool isPressingKey = false;
 
+        int currentCollectiblesOnScreen = 0;
         int maxCollectiblesOnScreen = 3;
 
 
@@ -120,11 +123,15 @@ namespace ChaosRunner
             backgroundImages[4] = Content.Load<Texture2D>("bluePurple");
             backgroundImages[5] = Content.Load<Texture2D>("purpleRed");
 
+            //enemyDecreaserImages[0] = Content.Load<Texture2D>("lightningOutline1");
+            //enemyDecreaserImages[1] = Content.Load<Texture2D>("lightningOutline2");
+
+
             for (int i = 0; i < enemyDecreaserImages.Length; i++)
             {
                 enemyDecreaserImages[i] = Content.Load<Texture2D>("lightningOutline" + (i + 1));
             }
-            
+
 
             for (int i = 0; i < 6; i++)
             {
@@ -141,7 +148,7 @@ namespace ChaosRunner
 
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
             {
-                tempEnemyDecreaser = new EnemyDecreaser(enemyDecreaserImages[0], new Rectangle(50 * i + 80,
+                tempEnemyDecreaser = new EnemyDecreaser(enemyDecreaserImages[0], new Rectangle(screenWidth + 50,
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight * 2), enemyDecreaserImages);
 
                 collectibleObjectsList.Add(tempEnemyDecreaser);
@@ -155,7 +162,7 @@ namespace ChaosRunner
             for (int i = 0; i < numOfEachEnemyType; ++i)
             {
                 tempBouncer = new Bouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
-                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 / 2, defaultCharacterHeight * 3 / 2));
                 tempMiniBouncer = new MiniBouncer(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
                 tempMissile = new Missile(Content.Load<Texture2D>("buttonOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
@@ -211,16 +218,61 @@ namespace ChaosRunner
             {
                 backgroundLogic();
                 collectibleAnimations();
+                spawnCollectible();
                 enemyMovement();
                 sideScroll();
+                checkCollectibleCollisions();
                 //checkEnemyPositions();
                 checkActiveEnemyList();
+                addEnemies();
                 endOfTickCode();
             }
 
 
             oldkb = kb;
             base.Update(gameTime);
+        }
+
+        public void spawnCollectible()
+        {
+            if(gameClock % 120 == 0 && gameClock != 0 && currentCollectiblesOnScreen < maxCollectiblesOnScreen)
+            {
+                randomDecider = rand.Next(1, 4);
+                if(randomDecider == 1)
+                {
+
+                    randomDecider = rand.Next(0, collectibleObjectsList.Count);
+                    while(collectibleObjectsList[randomDecider].isOnScreen == true)
+                    {
+                        randomDecider = rand.Next(0, collectibleObjectsList.Count);
+
+                    }
+
+                    //do
+                    //{
+                    //    randomDecider = rand.Next(0, collectibleObjectsList.Count);
+                    //}
+                    //while (collectibleObjectsList[randomDecider].isOnScreen);
+
+
+                    setCharacterPos(ref collectibleObjectsList, randomDecider);
+                }
+
+            }
+        }
+
+        public void setCharacterPos(ref List<BaseCollectible> listWithObject, int index)
+        {
+            randomDecider = rand.Next(screenEncapsulation.Left, screenEncapsulation.Right - listWithObject[index].lengthX);
+            listWithObject[index].setRecX(randomDecider);
+            randomDecider = rand.Next(screenEncapsulation.Top, screenEncapsulation.Bottom - listWithObject[index].lengthY);
+            listWithObject[index].setRecY(randomDecider);
+        }
+
+        public void setCharacterPosOffScreen(ref List<BaseCollectible> listWithObject, int index)
+        {
+            listWithObject[index].setRecX(screenWidth + 100);
+            
         }
 
         public void userControls()
@@ -244,7 +296,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (checkCollisions() == false && player.getRec().Top - 1 >= screenEncapsulation.Top)
+                    if (checkEnemyCollisions() == false && player.getRec().Top - 1 >= screenEncapsulation.Top)
                     {
                         player.addToRecY(-1);
                     }
@@ -257,7 +309,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (checkCollisions() == false && player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
+                    if (checkEnemyCollisions() == false && player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
                     {
                         player.addToRecY(1);
                     }
@@ -269,7 +321,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed + 2; i++)
                 {
-                    if (checkCollisions() == false && player.getRec().Left - 1 >= screenEncapsulation.Left)
+                    if (checkEnemyCollisions() == false && player.getRec().Left - 1 >= screenEncapsulation.Left)
                     {
                         player.addToRecX(-1);
                     }
@@ -281,7 +333,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (checkCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
+                    if (checkEnemyCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
                     {
                         player.addToRecX(1);
                     }
@@ -330,7 +382,18 @@ namespace ChaosRunner
             gameClock++;
         }
 
-        public bool checkCollisions()
+        public void checkCollectibleCollisions()
+        {
+            for (int i = 0; i < collectibleObjectsList.Count; i++)
+            {
+                if(collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyLimit))
+                {
+                    setCharacterPosOffScreen(ref collectibleObjectsList, i);
+                }
+            }
+        }
+
+        public bool checkEnemyCollisions()
         {
             bool didCollide = false;
             for (int i = 0; i < enemiesList.Count; i++)
@@ -365,20 +428,16 @@ namespace ChaosRunner
             }
         }
 
-        //public void checkEnemyPositions()
-        //{
-        //    //shouldEnemiesLoop = true;
-        //    //for (int i = 0; i < enemyLimit; ++i)
-        //    //{
-        //    //    if (shouldEnemiesLoop == true && activeEnemies[i].getRec().Right > screenEncapsulation.Left)
-        //    //    {
-        //    //        shouldEnemiesLoop = false;
-        //    //        return;
-        //    //    }
-        //    //}
-        //    //resetEnemies();
-
-        //}
+        public void addEnemies()
+        {
+            if(gameClock % 180 == 0 && gameClock != 0)
+            {
+                if (enemyLimit < enemiesList.Count)
+                {
+                    enemyLimit++;
+                }
+            }
+        }
 
         public void setEnemyStartingPos(ref List<BaseEnemy> enemyToMove, int index)
         {
@@ -388,24 +447,6 @@ namespace ChaosRunner
 
 
         }
-
-        //public void resetEnemies()
-        //{
-        //    //if (shouldEnemiesLoop)
-        //    //{
-        //    //    for (int i = 0; i < activeEnemies.Count; i++)
-        //    //    {
-        //    //        //activeEnemies[i].setRecX(enemyStartingX + rand.Next(10, 80));
-        //    //        setEnemyStartingPos(ref activeEnemies, i);
-        //    //        //activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
-        //    //    }
-        //    //    if (enemyLimit < enemiesList.Count)
-        //    //    {
-        //    //        enemyLimit++;
-        //    //    }
-        //    //    chooseEnemiesToMove();
-        //    //}
-        //}
 
         public void enemyMovement()
         {
@@ -418,11 +459,14 @@ namespace ChaosRunner
 
         public void collectibleAnimations()
         {
+            didAnimate = false;
             if (gameClock % 20 == 0)
             {
                 for (int i = 0; i < collectibleObjectsList.Count; i++)
                 {
                     collectibleObjectsList[i].animate();
+                    didAnimate = true;
+
                 }
             }
         }
@@ -447,10 +491,10 @@ namespace ChaosRunner
 
             if(shouldChoose)
             {
-                if (enemyLimit < enemiesList.Count)
-                {
-                    enemyLimit++;
-                }
+                //if (enemyLimit < enemiesList.Count)
+                //{
+                //    enemyLimit++;
+                //}
                 chooseEnemiesToMove();
             }
         }
@@ -512,7 +556,7 @@ namespace ChaosRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.PaleVioletRed);
+            GraphicsDevice.Clear(Color.White);
             spriteBatch.Begin();
 
             for (int i = 0; i < backgroundCharacterList.Count; i++)
@@ -531,9 +575,10 @@ namespace ChaosRunner
             {
                 collectibleObjectsList[i].drawCharacter(spriteBatch);
                 spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[i].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "Image: " + enemyDecreaserImages[i], new Vector2(screenWidth - 300, screenHeight - 30), Color.Black);
 
             }
-            spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[i].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+            spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[0].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
 
             player.drawCharacter(spriteBatch, Color.Red);
 
@@ -551,6 +596,7 @@ namespace ChaosRunner
             spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
             spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
+            spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
 
 
 

@@ -11,6 +11,7 @@ namespace ChaosRunner
 {
     public class BaseCollectible : Character, ICollectible
     {
+        public bool isOnScreen { get; set; }
         public int totalFrames { get; set; }
         public int currentFrame { get; set; }
         public Texture2D[] texturesArray{ get; set; }
@@ -21,13 +22,16 @@ namespace ChaosRunner
             this.characterRec = rec;
             this.isMoving = false;
             texturesArray = newTextures;
+            currentFrame = 0;
+            totalFrames = newTextures.Length;
+            isOnScreen = false;
 
 
         }
 
-        public virtual void OnIntersect(Rectangle boundsRec, ref int valueToChange)
+        public virtual bool OnIntersect(Rectangle boundsRec, ref int valueToChange)
         {
-
+            return false;
         }
 
         public override void changeImage()

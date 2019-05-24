@@ -14,6 +14,8 @@ namespace ChaosRunner
         public Texture2D texture;
         public Rectangle characterRec;
         public int speed { get; set; }
+        public int lengthX { get; set; }
+        public int lengthY { get; set; }
         public bool isMoving{ get; set; }
 
         public Character()
@@ -26,6 +28,8 @@ namespace ChaosRunner
             texture = tex;
             characterRec = rec;
             isMoving = false;
+            lengthX = characterRec.Right - characterRec.Left;
+            lengthY = characterRec.Bottom - characterRec.Top;
         }
         public void setRec(Rectangle newValue)
         {
@@ -43,6 +47,7 @@ namespace ChaosRunner
         {
             characterRec.X += 1;
         }
+
 
         public virtual void setRecY(int newValue)
         {

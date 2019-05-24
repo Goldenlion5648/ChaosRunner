@@ -18,15 +18,19 @@ namespace ChaosRunner
 
         }
 
-        public override void OnIntersect(Rectangle boundsRec, ref int valueToChange)
+        public override bool OnIntersect(Rectangle boundsRec, ref int valueToChange)
         {
             if (characterRec.Intersects(boundsRec))
             {
                 if (valueToChange >= 4)
                 {
-                    valueToChange -= 3;
+                    valueToChange -= 2;
+                    isOnScreen = false;
+                    return true;
                 }
             }
+
+            return false;
         }
 
         public override void drawCharacter(SpriteBatch sb)
