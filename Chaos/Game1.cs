@@ -323,6 +323,7 @@ namespace ChaosRunner
         {
             enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 280));
             enemyToMove[index].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
+            //enemyToMove[index].setRec()
 
 
         }
@@ -374,10 +375,10 @@ namespace ChaosRunner
 
             if(shouldChoose)
             {
-                //if (enemyLimit < enemiesList.Count)
-                //{
-                //    enemyLimit++;
-                //}
+                if (enemyLimit < enemiesList.Count)
+                {
+                    enemyLimit++;
+                }
                 chooseEnemiesToMove();
             }
         }
@@ -397,7 +398,7 @@ namespace ChaosRunner
 
             while (enemiesMovingCurrently < enemyLimit)
             {
-                randomDecider = rand.Next(0, 10);
+                randomDecider = rand.Next(0, enemiesList.Count);
                 if (enemiesList[randomDecider].isMoving == false && activeEnemies.Contains(enemiesList[randomDecider]) == false)
                 {
                     enemiesList[randomDecider].isMoving = true;
@@ -454,9 +455,8 @@ namespace ChaosRunner
             }
             //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
-            spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 280), Color.Black);
-            spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 240), Color.Black);
-            spriteBatch.DrawString(scoreFont, "X: ", new Vector2(screenWidth - 300, screenHeight - 300), Color.Black);
+            spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
+            spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
 
             // TODO: Add your drawing code here
 

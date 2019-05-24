@@ -31,7 +31,7 @@ namespace ChaosRunner
         {
             characterRec = newValue;
         }
-        public void setRecX(int newValue)
+        public virtual void setRecX(int newValue)
         {
             characterRec.X = newValue;
         }
@@ -44,7 +44,7 @@ namespace ChaosRunner
             characterRec.X += 1;
         }
 
-        public void setRecY(int newValue)
+        public virtual void setRecY(int newValue)
         {
             characterRec.Y = newValue;
         }

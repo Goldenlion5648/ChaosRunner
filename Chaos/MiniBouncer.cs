@@ -19,6 +19,8 @@ namespace ChaosRunner
         public int upperBound{ get; set; }
         public int lowerBound{ get; set; }
 
+        public bool hasSetNewPos { get; set; }
+
         //private int speed;
 
         //public int speed { get; set; }
@@ -36,9 +38,27 @@ namespace ChaosRunner
 
 
         }
+        public override void setRecX(int newValue)
+        {
+            characterRec.X = newValue;
+            hasSetNewPos = true;
+        }
+
+        public override void setRecY(int newValue)
+        {
+            characterRec.Y = newValue;
+            hasSetNewPos = true;
+        }
 
         public override void Move(Rectangle boundsRec)
         {
+            if(hasSetNewPos)
+            {
+                upperBound = characterRec.Top - 70;
+                lowerBound = characterRec.Bottom + 70;
+                hasSetNewPos = false;
+            }
+
             if (characterRec.Intersects(boundsRec) && isMoving)
             {
                 if (isMovingUp)
