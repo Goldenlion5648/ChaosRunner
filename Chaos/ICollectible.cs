@@ -14,6 +14,7 @@ namespace ChaosRunner
         //int MyProperty { get; set; }
 
         void OnIntersect(Rectangle boundsRec, ref int valueToChange);
+        void animate();
 
 
     }

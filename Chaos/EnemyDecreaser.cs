@@ -11,7 +11,7 @@ namespace ChaosRunner
 {
     public class EnemyDecreaser : BaseCollectible, ICollectible
     {
-        public EnemyDecreaser(Texture2D tex, Rectangle rec) : base(tex, rec)
+        public EnemyDecreaser(Texture2D tex, Rectangle rec, Texture2D[] newTexture) : base(tex, rec, newTexture)
         {
             this.texture = tex;
             this.characterRec = rec;
@@ -27,6 +27,11 @@ namespace ChaosRunner
                     valueToChange -= 3;
                 }
             }
+        }
+
+        public override void drawCharater(SpriteBatch sb)
+        {
+            sb.Draw(texture, characterRec, Color.LightGoldenrodYellow);
         }
     }
 }

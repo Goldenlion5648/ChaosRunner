@@ -30,6 +30,7 @@ namespace ChaosRunner
 
         List<Character> backgroundCharacterList = new List<Character>(6);
         Texture2D[] backgroundImages = new Texture2D[6];
+        Texture2D[] enemyDecreaserImages = new Texture2D[2];
 
 
         int numOfEachEnemyType = 5;
@@ -119,6 +120,12 @@ namespace ChaosRunner
             backgroundImages[4] = Content.Load<Texture2D>("bluePurple");
             backgroundImages[5] = Content.Load<Texture2D>("purpleRed");
 
+            for (int i = 0; i < enemyDecreaserImages.Length; i++)
+            {
+                enemyDecreaserImages[i] = Content.Load<Texture2D>("lightningOutline" + (i + 1));
+            }
+            
+
             for (int i = 0; i < 6; i++)
             {
                 backgroundCharacterList.Add(null);
@@ -134,8 +141,10 @@ namespace ChaosRunner
 
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
             {
-                tempEnemyDecreaser = new EnemyDecreaser(Content.Load<Texture2D>("triangleOutline"), new Rectangle(enemyStartingX + rand.Next(10, 80),
-                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight));
+                tempEnemyDecreaser = new EnemyDecreaser(enemyDecreaserImages[0], new Rectangle(50 * i + 80,
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight * 2), enemyDecreaserImages);
+
+                collectibleObjectsList.Add(tempEnemyDecreaser);
             }
 
 
@@ -201,6 +210,7 @@ namespace ChaosRunner
             if (isGamePaused == false)
             {
                 backgroundLogic();
+                collectibleAnimations();
                 enemyMovement();
                 sideScroll();
                 //checkEnemyPositions();
@@ -406,6 +416,17 @@ namespace ChaosRunner
             }
         }
 
+        public void collectibleAnimations()
+        {
+            if (gameClock % 20 == 0)
+            {
+                for (int i = 0; i < collectibleObjectsList.Count; i++)
+                {
+                    collectibleObjectsList[i].animate();
+                }
+            }
+        }
+
         public void checkActiveEnemyList()
         {
             bool shouldChoose = false;
@@ -504,6 +525,11 @@ namespace ChaosRunner
             {
                 spriteBatch.DrawString(scoreFont, "backgroundPos: " + backgroundCharacterList[i].getRecX(), new Vector2(200, 300 + i * 20), Color.Black);
 
+            }
+
+            for (int i = 0; i < collectibleObjectsList.Count; i++)
+            {
+                collectibleObjectsList[i].drawCharater(spriteBatch);
             }
             player.drawCharater(spriteBatch, Color.Red);
 

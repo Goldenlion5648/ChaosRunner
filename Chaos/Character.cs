@@ -74,6 +74,11 @@ namespace ChaosRunner
             texture = newTex;
         }
 
+        public virtual void changeImage()
+        {
+            //texture = newTex;
+        }
+
         public virtual void drawCharater(SpriteBatch sb)
         {
             sb.Draw(texture, characterRec, Color.White);

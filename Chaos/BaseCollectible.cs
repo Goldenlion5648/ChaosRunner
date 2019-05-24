@@ -11,11 +11,16 @@ namespace ChaosRunner
 {
     public class BaseCollectible : Character, ICollectible
     {
-        public BaseCollectible(Texture2D tex, Rectangle rec) : base(tex, rec)
+        public int totalFrames { get; set; }
+        public int currentFrame { get; set; }
+        public Texture2D[] texturesArray{ get; set; }
+
+        public BaseCollectible(Texture2D tex, Rectangle rec, Texture2D[] newTextures) : base(tex, rec)
         {
             this.texture = tex;
             this.characterRec = rec;
             this.isMoving = false;
+            texturesArray = newTextures;
 
 
         }
@@ -24,6 +29,24 @@ namespace ChaosRunner
         {
 
         }
+
+        public override void changeImage()
+        {
+            //currentFrame=
+        }
+
+        public void animate()
+        {
+            if(currentFrame < totalFrames - 1)
+            {
+                currentFrame++;
+            }
+            else
+            {
+                currentFrame = 0;
+            }
+        }
+
 
     }
 }
