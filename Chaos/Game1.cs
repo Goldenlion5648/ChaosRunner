@@ -50,6 +50,8 @@ namespace ChaosRunner
         int currentCharacterHeight = 50;
         int currentCharacterWidth = 50;
 
+        int playerHitCooldown = 0;
+
         bool didAnimate = true;
 
         int playerSpeed = 7;
@@ -123,11 +125,11 @@ namespace ChaosRunner
             player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (defaultCharacterWidth / 2),
                 screenHeight / 2 - defaultCharacterHeight / 2, defaultCharacterWidth, defaultCharacterHeight));
 
-            healthBar = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle(screenWidth - 100,
-                40, defaultCharacterWidth * 3, defaultCharacterHeight));
+            healthBar = new Character(Content.Load<Texture2D>("blankSquare"), new Rectangle(screenWidth - 250,
+                40, defaultCharacterWidth * 4, defaultCharacterHeight - 10));
 
-            healthBarOutline = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle(screenWidth - 100,
-                40, defaultCharacterWidth * 3, defaultCharacterHeight));
+            healthBarOutline = new Character(Content.Load<Texture2D>("blackSquare"), new Rectangle(screenWidth - 255,
+                35, defaultCharacterWidth * 4 + 10, defaultCharacterHeight));
 
             backgroundImages[0] = Content.Load<Texture2D>("redOrange");
             backgroundImages[1] = Content.Load<Texture2D>("orangeYellow");
@@ -413,7 +415,24 @@ namespace ChaosRunner
 
         public void endOfTickCode()
         {
+            if (playerHitCooldown > 0)
+            {
+                playerHitCooldown--;
+            }
+            if (playerHealth < 100 && gameClock % 30 == 0)
+                adjustPlayerHealth(-1);
             gameClock++;
+        }
+
+        public void adjustPlayerHealth(int positiveAmountToSubtract)
+        {
+            playerHealth -= positiveAmountToSubtract;
+            if (playerHealth < 0)
+            {
+                playerHealth = 100;
+                //state = gameState.lose;
+            }
+            healthBar.setRecWidth(playerHealth * 2);
         }
 
         public void checkCollectibleCollisions()
@@ -437,6 +456,12 @@ namespace ChaosRunner
                 if (player.getRec().Intersects(enemiesList[i].getRec()))
                 {
                     didCollide = true;
+                    if(playerHitCooldown == 0)
+                    {
+                        playerHitCooldown = 90;
+                        adjustPlayerHealth(37);
+
+                    }
                 }
             }
 
@@ -586,30 +611,22 @@ namespace ChaosRunner
             }
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
+        public void drawTitleScreen()
         {
-            GraphicsDevice.Clear(Color.White);
-            spriteBatch.Begin();
 
+        }
+
+        public void drawGameplay()
+        {
             for (int i = 0; i < backgroundCharacterList.Count; i++)
             {
                 backgroundCharacterList[i].drawCharacter(spriteBatch);
 
             }
 
-            for (int i = 0; i < backgroundCharacterList.Count; i++)
-            {
-                //spriteBatch.DrawString(scoreFont, "backgroundPos: " + backgroundCharacterList[i].getRecX(), new Vector2(200, 300 + i * 20), Color.Black);
-
-            }
-
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
-                //collectibleObjectsList[i].drawCharacter(spriteBatch);
+                collectibleObjectsList[i].drawCharacter(spriteBatch);
                 //spriteBatch.DrawString(scoreFont, "X: " + collectibleObjectsList[i].getRecX(), new Vector2(screenWidth - 340, i * 30 + 40), Color.Black);
                 //spriteBatch.DrawString(scoreFont, "Y: " + collectibleObjectsList[i].getRecY(), new Vector2(screenWidth - 250, i * 30 + 40), Color.Black);
                 //spriteBatch.DrawString(scoreFont, "Image: " + enemyDecreaserImages[i], new Vector2(screenWidth - 300, screenHeight - 30), Color.Black);
@@ -617,7 +634,15 @@ namespace ChaosRunner
             }
             spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[0].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
 
-            player.drawCharacter(spriteBatch, Color.Red);
+            if (playerHitCooldown == 0 || playerHitCooldown % 6 != 0)
+            {
+                player.drawCharacter(spriteBatch, Color.Red);
+            }
+            healthBarOutline.drawCharacter(spriteBatch);
+            healthBar.drawCharacter(spriteBatch, Color.Red);
+            spriteBatch.DrawString(scoreFont, playerHealth.ToString(), new Vector2(healthBarOutline.getRec().Center.X - 12, healthBarOutline.getRec().Center.Y - 8), Color.White);
+
+
 
             for (int i = 0; i < enemiesList.Count; i++)
             {
@@ -635,10 +660,34 @@ namespace ChaosRunner
             spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
             spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
 
+        }
 
+        public void drawLose()
+        {
 
-            // TODO: Add your drawing code here
+        }
 
+        /// <summary>
+        /// This is called when the game should draw itself.
+        /// </summary>
+        /// <param name="gameTime">Provides a snapshot of timing values.</param>
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.White);
+            spriteBatch.Begin();
+
+            switch (state)
+            {
+                case gameState.titleScreen:
+                    drawTitleScreen();
+                    break;
+                case gameState.gameplay:
+                    drawGameplay();
+                    break;
+                case gameState.lose:
+                    drawLose();
+                    break;
+            }
 
             spriteBatch.End();
             base.Draw(gameTime);
