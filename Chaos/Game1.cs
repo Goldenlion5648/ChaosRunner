@@ -15,7 +15,7 @@ namespace ChaosRunner
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        Character player;
+        Character player, healthBar, healthBarOutline;
         //Bouncer wallBouncer;
 
 
@@ -65,6 +65,8 @@ namespace ChaosRunner
 
         int score = 0;
 
+        int playerHealth = 100;
+
         int gameClock = 0;
 
         int enemyStartingX = 0;
@@ -75,7 +77,12 @@ namespace ChaosRunner
         int enemiesMovingCurrently = 0;
         int randomDecider;
 
+        enum gameState
+        {
+            titleScreen, gameplay, lose
+        }
 
+        gameState state = gameState.gameplay;
 
         public Game1()
         {
@@ -115,6 +122,12 @@ namespace ChaosRunner
 
             player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (defaultCharacterWidth / 2),
                 screenHeight / 2 - defaultCharacterHeight / 2, defaultCharacterWidth, defaultCharacterHeight));
+
+            healthBar = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle(screenWidth - 100,
+                40, defaultCharacterWidth * 3, defaultCharacterHeight));
+
+            healthBarOutline = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle(screenWidth - 100,
+                40, defaultCharacterWidth * 3, defaultCharacterHeight));
 
             backgroundImages[0] = Content.Load<Texture2D>("redOrange");
             backgroundImages[1] = Content.Load<Texture2D>("orangeYellow");
@@ -208,8 +221,34 @@ namespace ChaosRunner
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-
             kb = Keyboard.GetState();
+
+            switch (state)
+            {
+                case gameState.titleScreen:
+                    titleScreen();
+                    break;
+                case gameState.gameplay:
+                    gameplay();
+                    break;
+                case gameState.lose:
+                    lose();
+                    break;
+            }
+
+            
+
+            oldkb = kb;
+            base.Update(gameTime);
+        }
+
+
+        public void titleScreen()
+        {
+
+        }
+        public void gameplay()
+        {
             startOfGameCode();
             userControls();
 
@@ -228,9 +267,10 @@ namespace ChaosRunner
                 endOfTickCode();
             }
 
+        }
+        public void lose()
+        {
 
-            oldkb = kb;
-            base.Update(gameTime);
         }
 
         public void spawnCollectible()
@@ -247,14 +287,8 @@ namespace ChaosRunner
                         randomDecider = rand.Next(0, collectibleObjectsList.Count);
 
                     }
-
-                    //do
-                    //{
-                    //    randomDecider = rand.Next(0, collectibleObjectsList.Count);
-                    //}
-                    //while (collectibleObjectsList[randomDecider].isOnScreen);
-
-
+                    currentCollectiblesOnScreen++;
+                    collectibleObjectsList[randomDecider].isOnScreen = true;
                     setCharacterPos(ref collectibleObjectsList, randomDecider);
                 }
 
@@ -389,6 +423,8 @@ namespace ChaosRunner
                 if(collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyLimit))
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
+                    currentCollectiblesOnScreen--;
+
                 }
             }
         }
@@ -567,14 +603,15 @@ namespace ChaosRunner
 
             for (int i = 0; i < backgroundCharacterList.Count; i++)
             {
-                spriteBatch.DrawString(scoreFont, "backgroundPos: " + backgroundCharacterList[i].getRecX(), new Vector2(200, 300 + i * 20), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "backgroundPos: " + backgroundCharacterList[i].getRecX(), new Vector2(200, 300 + i * 20), Color.Black);
 
             }
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
-                collectibleObjectsList[i].drawCharacter(spriteBatch);
-                spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[i].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+                //collectibleObjectsList[i].drawCharacter(spriteBatch);
+                //spriteBatch.DrawString(scoreFont, "X: " + collectibleObjectsList[i].getRecX(), new Vector2(screenWidth - 340, i * 30 + 40), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "Y: " + collectibleObjectsList[i].getRecY(), new Vector2(screenWidth - 250, i * 30 + 40), Color.Black);
                 //spriteBatch.DrawString(scoreFont, "Image: " + enemyDecreaserImages[i], new Vector2(screenWidth - 300, screenHeight - 30), Color.Black);
 
             }
@@ -585,9 +622,9 @@ namespace ChaosRunner
             for (int i = 0; i < enemiesList.Count; i++)
             {
                 enemiesList[i].drawCharacter(spriteBatch);
-                spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth - 500, 300 + i * 20), Color.Black);
-                spriteBatch.DrawString(scoreFont, "Y: " + enemiesList[i].getRecY(), new Vector2(screenWidth - 400, 300 + i * 20), Color.Black);
-                spriteBatch.DrawString(scoreFont, "isMoving: " + enemiesList[i].isMoving, new Vector2(screenWidth - 300, 300 + i * 20), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth - 500, 300 + i * 20), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "Y: " + enemiesList[i].getRecY(), new Vector2(screenWidth - 400, 300 + i * 20), Color.Black);
+                //spriteBatch.DrawString(scoreFont, "isMoving: " + enemiesList[i].isMoving, new Vector2(screenWidth - 300, 300 + i * 20), Color.Black);
                 //spriteBatch.DrawString(testFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
             }
