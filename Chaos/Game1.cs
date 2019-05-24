@@ -164,7 +164,7 @@ namespace ChaosRunner
                 enemyMovement();
                 sideScroll();
                 checkEnemyPositions();
-                endOfGameCode();
+                endOfTickCode();
             }
 
 
@@ -274,7 +274,7 @@ namespace ChaosRunner
             }
         }
 
-        public void endOfGameCode()
+        public void endOfTickCode()
         {
             gameClock++;
             oldkb = kb;
@@ -312,7 +312,7 @@ namespace ChaosRunner
 
         public void setEnemyStartingPos(ref List<BaseEnemy> enemyToMove, int index)
         {
-            enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 80));
+            enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 280));
             enemyToMove[index].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
 
 
@@ -320,7 +320,7 @@ namespace ChaosRunner
 
         public void resetEnemies()
         {
-            if(shouldEnemiesLoop)
+            if (shouldEnemiesLoop)
             {
                 for (int i = 0; i < activeEnemies.Count; i++)
                 {
@@ -328,7 +328,10 @@ namespace ChaosRunner
                     setEnemyStartingPos(ref activeEnemies, i);
                     //activeEnemies[i].setRecY(rand.Next(10, screenHeight - defaultCharacterHeight));
                 }
-
+                if (enemyLimit < enemiesList.Count)
+                {
+                    enemyLimit++;
+                }
                 chooseEnemiesToMove();
             }
         }
@@ -341,6 +344,8 @@ namespace ChaosRunner
                 activeEnemies[i].Move(screenEncapsulation);
             }
         }
+
+        //public void check
 
         public void chooseEnemiesToMove()
         {

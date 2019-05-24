@@ -9,24 +9,24 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ChaosRunner
 {
-    public class Bouncer : BaseEnemy, IEnemy
+    public class MiniBouncer : Bouncer, IEnemy
     {
 
         private int typeNum = 0;
         //private int speed = 5;
         //private bool isMovingUp = true;
 
-        public bool isMovingUp { get; set; }
         //private int speed;
 
         //public int speed { get; set; }
+        public int MyProperty { get; set; }
 
-        public Bouncer(Texture2D tex, Rectangle rec) : base(tex, rec)
+        public MiniBouncer(Texture2D tex, Rectangle rec) : base(tex, rec)
         {
             this.texture = tex;
             this.characterRec = rec;
             speed = 5;
-            
+
 
 
         }
