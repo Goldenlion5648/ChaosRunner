@@ -16,6 +16,9 @@ namespace ChaosRunner
         //private int speed = 5;
         //private bool isMovingUp = true;
 
+        public int upperBound{ get; set; }
+        public int lowerBound{ get; set; }
+
         //private int speed;
 
         //public int speed { get; set; }
@@ -26,6 +29,9 @@ namespace ChaosRunner
             this.texture = tex;
             this.characterRec = rec;
             speed = 5;
+
+            upperBound = characterRec.Top - 70;
+            lowerBound = characterRec.Bottom + 70;
 
 
 
@@ -39,7 +45,7 @@ namespace ChaosRunner
                 {
                     for (int i = 0; i < speed; i++)
                     {
-                        if (characterRec.Bottom < boundsRec.Bottom)
+                        if (characterRec.Bottom < lowerBound)
                         {
                             characterRec.Y += 1;
                         }
@@ -54,7 +60,7 @@ namespace ChaosRunner
                 {
                     for (int i = 0; i < speed; i++)
                     {
-                        if (characterRec.Y > boundsRec.Top)
+                        if (characterRec.Top > upperBound)
                         {
                             characterRec.Y -= 1;
                         }
@@ -70,7 +76,7 @@ namespace ChaosRunner
 
         public override void drawCharater(SpriteBatch sb)
         {
-            sb.Draw(texture, characterRec, Color.Green);
+            sb.Draw(texture, characterRec, Color.Purple);
         }
     }
 }
