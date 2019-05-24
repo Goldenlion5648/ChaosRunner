@@ -12,7 +12,6 @@ namespace ChaosRunner
     public class Bouncer : BaseEnemy, IEnemy
     {
 
-        private int typeNum = 0;
         //private int speed = 5;
         //private bool isMovingUp = true;
 
@@ -68,7 +67,7 @@ namespace ChaosRunner
             }
         }
 
-        public override void drawCharater(SpriteBatch sb)
+        public override void drawCharacter(SpriteBatch sb)
         {
             sb.Draw(texture, characterRec, Color.Green);
         }

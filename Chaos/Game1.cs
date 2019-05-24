@@ -517,7 +517,7 @@ namespace ChaosRunner
 
             for (int i = 0; i < backgroundCharacterList.Count; i++)
             {
-                backgroundCharacterList[i].drawCharater(spriteBatch);
+                backgroundCharacterList[i].drawCharacter(spriteBatch);
 
             }
 
@@ -529,13 +529,17 @@ namespace ChaosRunner
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
-                collectibleObjectsList[i].drawCharater(spriteBatch);
+                collectibleObjectsList[i].drawCharacter(spriteBatch);
+                spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[i].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+
             }
-            player.drawCharater(spriteBatch, Color.Red);
+            spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[i].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+
+            player.drawCharacter(spriteBatch, Color.Red);
 
             for (int i = 0; i < enemiesList.Count; i++)
             {
-                enemiesList[i].drawCharater(spriteBatch);
+                enemiesList[i].drawCharacter(spriteBatch);
                 spriteBatch.DrawString(scoreFont, "X: " + enemiesList[i].getRecX(), new Vector2(screenWidth - 500, 300 + i * 20), Color.Black);
                 spriteBatch.DrawString(scoreFont, "Y: " + enemiesList[i].getRecY(), new Vector2(screenWidth - 400, 300 + i * 20), Color.Black);
                 spriteBatch.DrawString(scoreFont, "isMoving: " + enemiesList[i].isMoving, new Vector2(screenWidth - 300, 300 + i * 20), Color.Black);
@@ -546,6 +550,9 @@ namespace ChaosRunner
 
             spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
+            spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
+
+
 
             // TODO: Add your drawing code here
 

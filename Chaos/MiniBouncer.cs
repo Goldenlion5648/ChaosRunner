@@ -94,7 +94,7 @@ namespace ChaosRunner
             }
         }
 
-        public override void drawCharater(SpriteBatch sb)
+        public override void drawCharacter(SpriteBatch sb)
         {
             sb.Draw(texture, characterRec, Color.Purple);
         }

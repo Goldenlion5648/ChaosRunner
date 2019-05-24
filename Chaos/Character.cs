@@ -79,12 +79,12 @@ namespace ChaosRunner
             //texture = newTex;
         }
 
-        public virtual void drawCharater(SpriteBatch sb)
+        public virtual void drawCharacter(SpriteBatch sb)
         {
             sb.Draw(texture, characterRec, Color.White);
         }
 
-        public void drawCharater(SpriteBatch sb, Color color)
+        public void drawCharacter(SpriteBatch sb, Color color)
         {
             sb.Draw(texture, characterRec, color);
         }

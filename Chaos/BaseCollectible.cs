@@ -45,6 +45,7 @@ namespace ChaosRunner
             {
                 currentFrame = 0;
             }
+            this.texture = texturesArray[currentFrame];
         }
 
 
