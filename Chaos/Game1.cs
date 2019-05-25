@@ -24,7 +24,7 @@ namespace ChaosRunner
         List<BaseCollectible> collectibleObjectsList = new List<BaseCollectible>();
         List<BaseEnemy> enemiesList = new List<BaseEnemy>();
         List<BaseEnemy> activeEnemies = new List<BaseEnemy>(1);
-        List<Character> allObjectsList = new List<Character>(1);
+        //List<Character> allObjectsList = new List<Character>(1);
 
         List<Character> backgroundCharacterList = new List<Character>(6);
         Texture2D[] backgroundImages = new Texture2D[6];
@@ -178,15 +178,19 @@ namespace ChaosRunner
                 tempEnemyDecreaser = new EnemyDecreaser(enemyDecreaserImages[0], new Rectangle(screenWidth + 50,
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight * 2), enemyDecreaserImages);
                 tempTimeFreezer = new TimeFreezer(timeFreezerImages[0], new Rectangle(screenWidth + 50,
-                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth  *2, defaultCharacterHeight * 2), timeFreezerImages);
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 2, defaultCharacterHeight * 2), timeFreezerImages);
                 tempHealthPack = new HealthPack(healthPackImages[0], new Rectangle(screenWidth + 50,
-                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 /2, defaultCharacterHeight *3 /2), healthPackImages);
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 / 2, defaultCharacterHeight * 3 / 2), healthPackImages);
 
                 collectibleObjectsList.Add(tempEnemyDecreaser);
                 collectibleObjectsList.Add(tempTimeFreezer);
                 collectibleObjectsList.Add(tempHealthPack);
-            }
 
+
+            }
+            tempEnemyDecreaser = null;
+            tempTimeFreezer = null;
+            tempHealthPack = null;
 
             Bouncer tempBouncer;
             MiniBouncer tempMiniBouncer;
@@ -215,9 +219,12 @@ namespace ChaosRunner
                 enemiesList.Add(tempMiniBouncer);
                 enemiesList.Add(tempMissile);
 
+
             }
 
-            
+            tempBouncer = null;
+            tempMiniBouncer = null;
+            tempMissile = null;
 
             screenEncapsulation = new Rectangle(0, 0, screenWidth, screenHeight);
 
@@ -232,7 +239,7 @@ namespace ChaosRunner
         {
             // TODO: Unload any non ContentManager content here
 
-
+            //Content.Unload();
         }
 
         /// <summary>
@@ -284,6 +291,7 @@ namespace ChaosRunner
                 backgroundLogic();
                 collectibleAnimations();
                 spawnCollectible();
+                checkEnemyCollisions();
                 enemyMovement();
                 sideScroll();
                 checkCollectibleCollisions();
@@ -357,7 +365,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (checkEnemyCollisions() == false && player.getRec().Top - 1 >= screenEncapsulation.Top)
+                    if (player.getRec().Top - 1 >= screenEncapsulation.Top)
                     {
                         player.addToRecY(-1);
                     }
@@ -370,7 +378,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (checkEnemyCollisions() == false && player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
+                    if ( player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
                     {
                         player.addToRecY(1);
                     }
@@ -382,7 +390,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed + 2; i++)
                 {
-                    if (checkEnemyCollisions() == false && player.getRec().Left - 1 >= screenEncapsulation.Left)
+                    if ( player.getRec().Left - 1 >= screenEncapsulation.Left)
                     {
                         player.addToRecX(-1);
                     }
@@ -394,7 +402,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed + 2; i++)
                 {
-                    if (checkEnemyCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
+                    if (player.getRec().Right + 1 <= screenEncapsulation.Right)
                     {
                         player.addToRecX(1);
                     }
@@ -414,21 +422,21 @@ namespace ChaosRunner
             //}
             if (hasDoneStartOfGameCode == false)
             {
-                for (int i = 0; i < enemiesList.Count; ++i)
-                {
-                    if (allObjectsList.Contains(enemiesList[i]) == false)
-                    {
-                        allObjectsList.Add(enemiesList[i]);
-                    }
-                }
+                //for (int i = 0; i < enemiesList.Count; ++i)
+                //{
+                //    if (allObjectsList.Contains(enemiesList[i]) == false)
+                //    {
+                //        allObjectsList.Add(enemiesList[i]);
+                //    }
+                //}
 
-                for (int i = 0; i < collectibleObjectsList.Count; ++i)
-                {
-                    if (allObjectsList.Contains(collectibleObjectsList[i]) == false)
-                    {
-                        allObjectsList.Add(collectibleObjectsList[i]);
-                    }
-                }
+                //for (int i = 0; i < collectibleObjectsList.Count; ++i)
+                //{
+                //    if (allObjectsList.Contains(collectibleObjectsList[i]) == false)
+                //    {
+                //        allObjectsList.Add(collectibleObjectsList[i]);
+                //    }
+                //}
 
                 chooseEnemiesToMove();
 
@@ -496,7 +504,7 @@ namespace ChaosRunner
             }
         }
 
-        public bool checkEnemyCollisions()
+        public void checkEnemyCollisions()
         {
             bool didCollide = false;
             for (int i = 0; i < enemiesList.Count; i++)
@@ -514,7 +522,7 @@ namespace ChaosRunner
             }
 
             //return didCollide;
-            return false;
+            //return false;
 
         }
 
