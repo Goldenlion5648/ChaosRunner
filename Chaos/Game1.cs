@@ -17,12 +17,10 @@ namespace ChaosRunner
 
         Character player, healthBar, healthBarOutline;
         //Bouncer wallBouncer;
-
-
+        
 
         KeyboardState kb, oldkb;
         SpriteFont testFont, scoreFont;
-        List<Bouncer> bouncerList = new List<Bouncer>();
         List<BaseCollectible> collectibleObjectsList = new List<BaseCollectible>();
         List<BaseEnemy> enemiesList = new List<BaseEnemy>();
         List<BaseEnemy> activeEnemies = new List<BaseEnemy>(1);
@@ -31,6 +29,7 @@ namespace ChaosRunner
         List<Character> backgroundCharacterList = new List<Character>(6);
         Texture2D[] backgroundImages = new Texture2D[6];
         Texture2D[] enemyDecreaserImages = new Texture2D[2];
+        Texture2D[] timeFreezerImages = new Texture2D[2];
 
 
         int numOfEachEnemyType = 5;
@@ -60,7 +59,7 @@ namespace ChaosRunner
         int currentCollectiblesOnScreen = 0;
         int maxCollectiblesOnScreen = 3;
 
-
+        int gameFreezeCooldown = 0;
         int sideScrollSpeed = -7;
 
         bool isGamePaused = false;
@@ -93,8 +92,7 @@ namespace ChaosRunner
             this.graphics.PreferredBackBufferHeight = screenHeight;
             this.graphics.PreferredBackBufferWidth = screenWidth;
             this.IsMouseVisible = true;
-
-            this.Window.AllowUserResizing = true;
+            //this.Window.AllowUserResizing = true;
             Content.RootDirectory = "Content";
         }
 
@@ -147,6 +145,11 @@ namespace ChaosRunner
                 enemyDecreaserImages[i] = Content.Load<Texture2D>("lightningOutline" + (i + 1));
             }
 
+            for (int i = 0; i < timeFreezerImages.Length; i++)
+            {
+                timeFreezerImages[i] = Content.Load<Texture2D>("clock" + (i + 1));
+            }
+
 
             for (int i = 0; i < 6; i++)
             {
@@ -159,14 +162,18 @@ namespace ChaosRunner
             scoreFont = Content.Load<SpriteFont>("scoreFont");
 
             EnemyDecreaser tempEnemyDecreaser;
+            TimeFreezer tempTimeFreezer;
 
 
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
             {
                 tempEnemyDecreaser = new EnemyDecreaser(enemyDecreaserImages[0], new Rectangle(screenWidth + 50,
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth, defaultCharacterHeight * 2), enemyDecreaserImages);
+                tempTimeFreezer = new TimeFreezer(enemyDecreaserImages[0], new Rectangle(screenWidth + 50,
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth  *2, defaultCharacterHeight * 2), timeFreezerImages);
 
                 collectibleObjectsList.Add(tempEnemyDecreaser);
+                collectibleObjectsList.Add(tempTimeFreezer);
             }
 
 
@@ -225,30 +232,32 @@ namespace ChaosRunner
 
             kb = Keyboard.GetState();
 
-            switch (state)
+            if (this.IsActive)
             {
-                case gameState.titleScreen:
-                    titleScreen();
-                    break;
-                case gameState.gameplay:
-                    gameplay();
-                    break;
-                case gameState.lose:
-                    lose();
-                    break;
+                switch (state)
+                {
+                    case gameState.titleScreen:
+                        titleScreen();
+                        break;
+                    case gameState.gameplay:
+                        gameplay();
+                        break;
+                    case gameState.lose:
+                        lose();
+                        break;
+                }
             }
-
             
 
             oldkb = kb;
             base.Update(gameTime);
         }
 
-
         public void titleScreen()
         {
 
         }
+
         public void gameplay()
         {
             startOfGameCode();
@@ -270,6 +279,7 @@ namespace ChaosRunner
             }
 
         }
+
         public void lose()
         {
 
@@ -367,7 +377,7 @@ namespace ChaosRunner
             {
                 isPressingKey = true;
 
-                for (int i = 0; i < playerSpeed; i++)
+                for (int i = 0; i < playerSpeed + 2; i++)
                 {
                     if (checkEnemyCollisions() == false && player.getRec().Right + 1 <= screenEncapsulation.Right)
                     {
@@ -418,6 +428,10 @@ namespace ChaosRunner
             if (playerHitCooldown > 0)
             {
                 playerHitCooldown--;
+            }
+            if (gameFreezeCooldown > 0)
+            {
+                gameFreezeCooldown--;
             }
             if (playerHealth < 100 && gameClock % 30 == 0)
                 adjustPlayerHealth(-1);
@@ -512,9 +526,12 @@ namespace ChaosRunner
         public void enemyMovement()
         {
             //wallBouncer.Move(screenEncapsulation);
-            for (int i = 0; i < activeEnemies.Count; ++i)
+            if (gameFreezeCooldown == 0)
             {
-                activeEnemies[i].Move(screenEncapsulation);
+                for (int i = 0; i < activeEnemies.Count; ++i)
+                {
+                    activeEnemies[i].Move(screenEncapsulation);
+                }
             }
         }
 
@@ -599,8 +616,8 @@ namespace ChaosRunner
                 }
             }
 
-            if (isPressingKey == false)
-            {
+            //if (isPressingKey == false)
+            //{
                 for (int i = 0; i < (-1 * sideScrollSpeed / 2 + 2); ++i)
                 {
                     if (player.getRecX() > screenEncapsulation.Left)
@@ -608,7 +625,7 @@ namespace ChaosRunner
                         player.addToRecX(-1);
                     }
                 }
-            }
+            //}
         }
 
         public void drawTitleScreen()
@@ -632,7 +649,7 @@ namespace ChaosRunner
                 //spriteBatch.DrawString(scoreFont, "Image: " + enemyDecreaserImages[i], new Vector2(screenWidth - 300, screenHeight - 30), Color.Black);
 
             }
-            spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[0].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
+            //spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[0].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
 
             if (playerHitCooldown == 0 || playerHitCooldown % 6 != 0)
             {
@@ -655,10 +672,10 @@ namespace ChaosRunner
             }
             //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
-            spriteBatch.DrawString(scoreFont, "enemyListLength: " + enemiesList.Count, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
+            spriteBatch.DrawString(scoreFont, "gameFreezeCooldown: " + gameFreezeCooldown, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
             spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
-            spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
+            //spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
 
         }
 
