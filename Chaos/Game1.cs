@@ -1,9 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 using System;
-
+using Microsoft.Xna.Framework.Audio;
 
 namespace ChaosRunner
 {
@@ -31,6 +32,9 @@ namespace ChaosRunner
         Texture2D[] enemyDecreaserImages = new Texture2D[2];
         Texture2D[] timeFreezerImages = new Texture2D[2];
         Texture2D[] healthPackImages = new Texture2D[2];
+
+        Song ambientMusic;
+        SoundEffect healthSound, hurtSound;
 
 
         int numOfEachEnemyType = 5;
@@ -160,6 +164,9 @@ namespace ChaosRunner
                 healthPackImages[i] = Content.Load<Texture2D>("healthPack" + (i + 1));
             }
 
+            ambientMusic = Content.Load<Song>("shortGameJamMusic2");
+            healthSound = Content.Load<SoundEffect>("healthSound2");
+            hurtSound = Content.Load<SoundEffect>("hurtSound2");
 
             for (int i = 0; i < 6; i++)
             {
@@ -286,6 +293,12 @@ namespace ChaosRunner
 
         public void titleScreen()
         {
+
+        }
+
+        public void sound()
+        {
+            //MediaPlayer.IsRepeating = true;
 
         }
 
@@ -446,6 +459,13 @@ namespace ChaosRunner
                 //        allObjectsList.Add(collectibleObjectsList[i]);
                 //    }
                 //}
+                //MediaPlayer.Play(ambientMusic);
+                //MediaPlayer.IsRepeating = true;
+
+                MediaPlayer.Play(ambientMusic);
+                MediaPlayer.IsRepeating = true;
+                
+                
 
                 chooseEnemiesToMove();
 
@@ -500,17 +520,22 @@ namespace ChaosRunner
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
+                    healthSound.Play();
+
                     score += powerUpScoreWorth * scoreMultiplier;
                 }
                 else if(collectibleObjectsList[i].texturesArray == timeFreezerImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyFreezeCooldown))
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
+                    healthSound.Play();
                     score += powerUpScoreWorth * scoreMultiplier;
                 }
                 else if (collectibleObjectsList[i].texturesArray == healthPackImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
                 {
                     adjustPlayerHealth(0);
+                    healthSound.Play();
+                    
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
 
@@ -530,6 +555,7 @@ namespace ChaosRunner
                     didCollide = true;
                     if(playerHitCooldown == 0)
                     {
+                        hurtSound.Play();
                         playerHitCooldown = 90;
                         adjustPlayerHealth(37);
 

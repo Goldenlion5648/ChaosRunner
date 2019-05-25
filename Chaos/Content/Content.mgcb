@@ -97,12 +97,6 @@
 /processorParam:TextureFormat=Color
 /build:clock2.png
 
-#begin gameJamMusic.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:gameJamMusic.wav
-
 #begin greenBlue.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -138,6 +132,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:healthPack2.png
+
+#begin healthSound2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:healthSound2.wav
+
+#begin hurtSound2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:hurtSound2.mp3
 
 #begin lightningOutline.png
 /importer:TextureImporter
@@ -217,6 +223,12 @@
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:scoreFont.spritefont
+
+#begin shortGameJamMusic2.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:shortGameJamMusic2.mp3
 
 #begin testFont.spritefont
 /importer:FontDescriptionImporter
