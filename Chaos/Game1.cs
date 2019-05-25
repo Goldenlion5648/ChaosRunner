@@ -180,7 +180,7 @@ namespace ChaosRunner
                 tempTimeFreezer = new TimeFreezer(timeFreezerImages[0], new Rectangle(screenWidth + 50,
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth  *2, defaultCharacterHeight * 2), timeFreezerImages);
                 tempHealthPack = new HealthPack(healthPackImages[0], new Rectangle(screenWidth + 50,
-                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 2, defaultCharacterHeight * 2), healthPackImages);
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 /2, defaultCharacterHeight *3 /2), healthPackImages);
 
                 collectibleObjectsList.Add(tempEnemyDecreaser);
                 collectibleObjectsList.Add(tempTimeFreezer);
@@ -217,6 +217,8 @@ namespace ChaosRunner
 
             }
 
+            
+
             screenEncapsulation = new Rectangle(0, 0, screenWidth, screenHeight);
 
             // TODO: use this.Content to load your game content here
@@ -229,6 +231,8 @@ namespace ChaosRunner
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+
+
         }
 
         /// <summary>
@@ -243,8 +247,8 @@ namespace ChaosRunner
 
             kb = Keyboard.GetState();
 
-            if (this.IsActive)
-            {
+            //if (this.IsActive)
+            //{
                 switch (state)
                 {
                     case gameState.titleScreen:
@@ -257,7 +261,7 @@ namespace ChaosRunner
                         lose();
                         break;
                 }
-            }
+            //}
             
 
             oldkb = kb;
@@ -450,7 +454,7 @@ namespace ChaosRunner
             }
 
 
-            if (playerHealth < 100 && gameClock % 30 == 0)
+            if (playerHealth < 100 && gameClock % 30 == 0 && playerHitCooldown == 0)
                 adjustPlayerHealth(-1);
 
 
@@ -712,6 +716,11 @@ namespace ChaosRunner
             spriteBatch.DrawString(scoreFont, "gameFreezeCooldown: " + enemyFreezeCooldown, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
             spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
+
+
+            //score += 5;
+            spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 10, 50), Color.Black);
+
             //spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
 
         }
