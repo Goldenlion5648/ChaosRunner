@@ -50,6 +50,9 @@ namespace ChaosRunner
         int currentCharacterHeight = 50;
         int currentCharacterWidth = 50;
 
+        int powerUpScoreWorth = 300;
+        double scoreMultiplier = 1;
+
         int playerHitCooldown = 0;
         int addEnemyCooldown = 0;
 
@@ -66,7 +69,7 @@ namespace ChaosRunner
 
         bool isGamePaused = false;
 
-        int score = 0;
+        double score = 0;
 
         int playerHealth = 100;
 
@@ -163,7 +166,11 @@ namespace ChaosRunner
                 backgroundCharacterList.Add(null);
                 backgroundCharacterList[i] = new Character(backgroundImages[i], new Rectangle(1400 * i, 0, 1400, screenHeight));
 
+                    //backgroundCharacterList[i].texture = null;
+                
+
             }
+
 
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
@@ -253,6 +260,8 @@ namespace ChaosRunner
                 Exit();
 
             kb = Keyboard.GetState();
+
+            
 
             //if (this.IsActive)
             //{
@@ -460,7 +469,10 @@ namespace ChaosRunner
             {
                 enemyFreezeCooldown--;
             }
-
+            if(gameClock % 60 == 0 && gameClock != 0)
+            {
+                score += 10 * enemiesMovingCurrently * scoreMultiplier;
+            }
 
             if (playerHealth < 100 && gameClock % 30 == 0 && playerHitCooldown == 0)
                 adjustPlayerHealth(-1);
@@ -488,17 +500,21 @@ namespace ChaosRunner
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
+                    score += powerUpScoreWorth * scoreMultiplier;
                 }
                 else if(collectibleObjectsList[i].texturesArray == timeFreezerImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyFreezeCooldown))
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
+                    score += powerUpScoreWorth * scoreMultiplier;
                 }
                 else if (collectibleObjectsList[i].texturesArray == healthPackImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
                 {
                     adjustPlayerHealth(0);
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
+
+                    score += powerUpScoreWorth * scoreMultiplier;
                 }
 
             }
@@ -531,7 +547,7 @@ namespace ChaosRunner
             for (int i = 0; i < backgroundCharacterList.Count; i++)
             {
                 backgroundCharacterList[i].addToRecX(-10);
-                if(backgroundCharacterList[i].getRec().Right < 0)
+                if (backgroundCharacterList[i].getRec().Right < 0)
                 {
                     if (i == 0)
                     {
@@ -543,6 +559,22 @@ namespace ChaosRunner
 
                     }
                 }
+
+                //if (backgroundCharacterList[i].getRec().Right < 0 || backgroundCharacterList[i].getRec().Left > screenEncapsulation.Right)
+                //{
+                //    backgroundCharacterList[i].texture.Dispose();
+                //}
+
+
+                    //backgroundCharacterList[i].texture = backgroundImages[i];
+
+                
+
+                //if (backgroundCharacterList[i % 6].texture.IsDisposed)
+                //{
+                //    backgroundCharacterList[i % 6].texture = backgroundImages[i % 6];
+                //}
+
             }
         }
 
@@ -721,9 +753,9 @@ namespace ChaosRunner
             }
             //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
-            spriteBatch.DrawString(scoreFont, "gameFreezeCooldown: " + enemyFreezeCooldown, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
+            //spriteBatch.DrawString(scoreFont, "gameFreezeCooldown: " + enemyFreezeCooldown, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
-            spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
+            //spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
 
 
             //score += 5;

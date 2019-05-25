@@ -18,6 +18,10 @@ namespace ChaosRunner
         public int lengthY { get; set; }
         public bool isMoving{ get; set; }
 
+        public int totalFrames { get; set; }
+        public int currentFrame { get; set; }
+        public Texture2D[] texturesArray { get; set; }
+
         public Character()
         {
             //texture = Content.Load<Texture2D>("buttonOutline");
@@ -31,6 +35,20 @@ namespace ChaosRunner
             lengthX = characterRec.Right - characterRec.Left;
             lengthY = characterRec.Bottom - characterRec.Top;
         }
+
+        public Character(Texture2D tex, Rectangle rec, Texture2D[] newTextures)
+        {
+            texture = tex;
+            characterRec = rec;
+            isMoving = false;
+            lengthX = characterRec.Right - characterRec.Left;
+            lengthY = characterRec.Bottom - characterRec.Top;
+
+            texturesArray = newTextures;
+            currentFrame = 0;
+            totalFrames = newTextures.Length;
+        }
+
         public void setRec(Rectangle newValue)
         {
             characterRec = newValue;
@@ -91,6 +109,19 @@ namespace ChaosRunner
         public virtual void changeImage()
         {
             //texture = newTex;
+        }
+
+        public void animate()
+        {
+            if (currentFrame < totalFrames - 1)
+            {
+                currentFrame++;
+            }
+            else
+            {
+                currentFrame = 0;
+            }
+            this.texture = texturesArray[currentFrame];
         }
 
         public virtual void drawCharacter(SpriteBatch sb)
