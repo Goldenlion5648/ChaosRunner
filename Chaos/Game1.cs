@@ -38,7 +38,7 @@ namespace ChaosRunner
 
 
         int numOfEachEnemyType = 5;
-        
+
 
         Character screenEncapsulation;
 
@@ -310,6 +310,20 @@ namespace ChaosRunner
 
         }
 
+        public void startOfGameCode()
+        {
+            if (hasDoneStartOfGameCode == false)
+            {
+
+                MediaPlayer.Play(ambientMusic);
+                MediaPlayer.IsRepeating = true;
+
+                chooseEnemiesToMove();
+                hasDoneStartOfGameCode = true;
+
+            }
+        }
+
         public void gameplay()
         {
             startOfGameCode();
@@ -330,6 +344,11 @@ namespace ChaosRunner
                 addEnemies();
                 increaseDifficulty();
                 endOfTickCode();
+            }
+            else
+            {
+                MediaPlayer.Pause();
+                
             }
 
         }
@@ -359,28 +378,34 @@ namespace ChaosRunner
                 }
 
 
-                
-                if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight)
-                {
-                    screenEncapsulation.shrinkUniformly(2);
-                    player.adjustToBeInBounds(screenEncapsulation.getRec());
-                }
+
+                //if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight)
+                //{
+                //    screenEncapsulation.shrinkUniformly(2);
+                //    player.adjustToBeInBounds(screenEncapsulation.getRec());
+                //}
 
 
             }
 
-            if(gameClock > 1000 && gameClock != 0 && gameClock % 400 == 0)
+            if (gameClock > 1000 && gameClock != 0 && gameClock % 30 == 0)
             {
                 //if (enemyLimit < enemiesList.Count)
                 //{
                 //    enemyLimit++;
                 //}
+
+                if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight && enemyFreezeCooldown == 0)
+                {
+                    screenEncapsulation.shrinkUniformly(1);
+                    player.adjustToBeInBounds(screenEncapsulation.getRec());
+                }
             }
         }
 
         public void lose()
         {
-            if(hasLost)
+            if (hasLost)
             {
 
             }
@@ -395,6 +420,27 @@ namespace ChaosRunner
 
         public void resetGame()
         {
+            powerUpSpawnFrequency = 120;
+            powerUpSpawnAttemptsFailed = 0;
+            playerHitCooldown = 0;
+            addEnemyCooldown = 0;
+            addEnemyInterval = 300;
+            playerSpeed = 7;
+            isPressingKey = false;
+            currentCollectiblesOnScreen = 0;
+            maxCollectiblesOnScreen = 3;
+            enemyFreezeCooldown = 0;
+            isGamePaused = false;
+            hasLost = false;
+            score = 0;
+            playerHealth = 100;
+            gameClock = 0;
+            enemyStartingX = 0;
+            enemyLimit = 5;
+            hasDoneStartOfGameCode = false;
+            enemiesMovingCurrently = 0;
+
+
 
         }
 
@@ -519,45 +565,6 @@ namespace ChaosRunner
 
         }
 
-        public void startOfGameCode()
-        {
-            //if(hasDoneStartOfGameCode == true)
-            //{
-            //    return;
-            //}
-            if (hasDoneStartOfGameCode == false)
-            {
-                //for (int i = 0; i < enemiesList.Count; ++i)
-                //{
-                //    if (allObjectsList.Contains(enemiesList[i]) == false)
-                //    {
-                //        allObjectsList.Add(enemiesList[i]);
-                //    }
-                //}
-
-                //for (int i = 0; i < collectibleObjectsList.Count; ++i)
-                //{
-                //    if (allObjectsList.Contains(collectibleObjectsList[i]) == false)
-                //    {
-                //        allObjectsList.Add(collectibleObjectsList[i]);
-                //    }
-                //}
-                //MediaPlayer.Play(ambientMusic);
-                //MediaPlayer.IsRepeating = true;
-
-                MediaPlayer.Play(ambientMusic);
-                MediaPlayer.IsRepeating = true;
-
-
-
-                chooseEnemiesToMove();
-
-
-                hasDoneStartOfGameCode = true;
-
-            }
-        }
-
         public void endOfTickCode()
         {
             if (playerHitCooldown > 0)
@@ -589,7 +596,7 @@ namespace ChaosRunner
             playerHealth -= positiveAmountToSubtract;
             if (playerHealth <= 0)
             {
-                playerHealth = 100;
+                //playerHealth = 100;
                 //state = gameState.lose;
                 hasLost = true;
             }
@@ -702,7 +709,7 @@ namespace ChaosRunner
         public void setEnemyStartingPos(ref List<BaseEnemy> enemyToMove, int index)
         {
             enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 280));
-            enemyToMove[index].setRecY(rand.Next(screenEncapsulation.getRec().Top, screenEncapsulation.getRec().Bottom- defaultCharacterHeight));
+            enemyToMove[index].setRecY(rand.Next(screenEncapsulation.getRec().Top, screenEncapsulation.getRec().Bottom - defaultCharacterHeight));
             //enemyToMove[index].setRec()
 
 
@@ -861,8 +868,8 @@ namespace ChaosRunner
 
             //score += 5;
             spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 50), Color.White);
-            if(hasLost)
-            spriteBatch.DrawString(scoreFont, "Your health has hit 0 ", new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 150), Color.White);
+            if (hasLost)
+                spriteBatch.DrawString(scoreFont, "Your health has hit 0 ", new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 150), Color.White);
             //spriteBatch.DrawString(scoreFont, Window_TextInput(), new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 190), Color.White);
 
             //spriteBatch.DrawString(testFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);

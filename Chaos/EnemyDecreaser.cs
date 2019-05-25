@@ -22,7 +22,19 @@ namespace ChaosRunner
         {
             if (characterRec.Intersects(boundsRec))
             {
-                if (valueToChange >= 4)
+                if (valueToChange >= 14)
+                {
+                    valueToChange -= 4;
+                    isOnScreen = false;
+                    return true;
+                }
+                else if (valueToChange >= 10)
+                {
+                    valueToChange -= 3;
+                    isOnScreen = false;
+                    return true;
+                }
+                else if (valueToChange >= 4)
                 {
                     valueToChange -= 2;
                     isOnScreen = false;
