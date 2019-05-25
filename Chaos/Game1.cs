@@ -39,7 +39,7 @@ namespace ChaosRunner
 
         int numOfEachEnemyType = 5;
 
-        Rectangle screenEncapsulation;
+        Character screenEncapsulation;
 
         Random rand = new Random(4);
 
@@ -61,6 +61,8 @@ namespace ChaosRunner
         int addEnemyCooldown = 0;
 
         bool didAnimate = true;
+
+        int addEnemyInterval = 300;
 
         int playerSpeed = 7;
         bool isPressingKey = false;
@@ -240,7 +242,8 @@ namespace ChaosRunner
             tempMiniBouncer = null;
             tempMissile = null;
 
-            screenEncapsulation = new Rectangle(0, 0, screenWidth, screenHeight);
+            //screenEncapsulation.getRec() = new Rectangle(0, 0, screenWidth, screenHeight);
+            screenEncapsulation = new Bouncer(Content.Load<Texture2D>("buttonOutline"), new Rectangle(0, 0, screenWidth, screenHeight));
 
             // TODO: use this.Content to load your game content here
         }
@@ -320,9 +323,28 @@ namespace ChaosRunner
                 //checkEnemyPositions();
                 checkActiveEnemyList();
                 addEnemies();
+                increaseDifficulty();
                 endOfTickCode();
             }
 
+        }
+
+        public void increaseDifficulty()
+        {
+            if(gameClock % 300 == 0 && gameClock != 0)
+            {
+                playerSpeed += 1;
+
+                if (addEnemyInterval >= 40)
+                {
+                    addEnemyInterval -= 10;
+                }
+
+                screenEncapsulation.shrinkUniformly(4);
+                player.adjustToBeInBounds(4, screenEncapsulation.getRec());
+
+
+            }
         }
 
         public void lose()
@@ -354,9 +376,9 @@ namespace ChaosRunner
 
         public void setCharacterPos(ref List<BaseCollectible> listWithObject, int index)
         {
-            randomDecider = rand.Next(screenEncapsulation.Left, screenEncapsulation.Right - listWithObject[index].lengthX);
+            randomDecider = rand.Next(screenEncapsulation.getRec().Left, screenEncapsulation.getRec().Right - listWithObject[index].lengthX);
             listWithObject[index].setRecX(randomDecider);
-            randomDecider = rand.Next(screenEncapsulation.Top, screenEncapsulation.Bottom - listWithObject[index].lengthY);
+            randomDecider = rand.Next(screenEncapsulation.getRec().Top, screenEncapsulation.getRec().Bottom - listWithObject[index].lengthY);
             listWithObject[index].setRecY(randomDecider);
         }
 
@@ -387,7 +409,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if (player.getRec().Top - 1 >= screenEncapsulation.Top)
+                    if (player.getRec().Top - 1 >= screenEncapsulation.getRec().Top)
                     {
                         player.addToRecY(-1);
                     }
@@ -400,7 +422,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed; i++)
                 {
-                    if ( player.getRec().Bottom + 1 <= screenEncapsulation.Bottom)
+                    if ( player.getRec().Bottom + 1 <= screenEncapsulation.getRec().Bottom)
                     {
                         player.addToRecY(1);
                     }
@@ -410,9 +432,9 @@ namespace ChaosRunner
             {
                 isPressingKey = true;
 
-                for (int i = 0; i < playerSpeed + 2; i++)
+                for (int i = 0; i < playerSpeed; i++)
                 {
-                    if ( player.getRec().Left - 1 >= screenEncapsulation.Left)
+                    if ( player.getRec().Left - 1 >= screenEncapsulation.getRec().Left)
                     {
                         player.addToRecX(-1);
                     }
@@ -424,7 +446,7 @@ namespace ChaosRunner
 
                 for (int i = 0; i < playerSpeed + 2; i++)
                 {
-                    if (player.getRec().Right + 1 <= screenEncapsulation.Right)
+                    if (player.getRec().Right + 1 <= screenEncapsulation.getRec().Right)
                     {
                         player.addToRecX(1);
                     }
@@ -489,9 +511,9 @@ namespace ChaosRunner
             {
                 enemyFreezeCooldown--;
             }
-            if(gameClock % 60 == 0 && gameClock != 0)
+            if(gameClock % 6 == 0 && gameClock != 0)
             {
-                score += 10 * enemiesMovingCurrently * scoreMultiplier;
+                score += 1 * enemiesMovingCurrently * scoreMultiplier;
             }
 
             if (playerHealth < 100 && gameClock % 30 == 0 && playerHitCooldown == 0)
@@ -556,7 +578,7 @@ namespace ChaosRunner
                     if(playerHitCooldown == 0)
                     {
                         hurtSound.Play();
-                        playerHitCooldown = 90;
+                        playerHitCooldown = 150;
                         adjustPlayerHealth(37);
 
                     }
@@ -586,7 +608,7 @@ namespace ChaosRunner
                     }
                 }
 
-                //if (backgroundCharacterList[i].getRec().Right < 0 || backgroundCharacterList[i].getRec().Left > screenEncapsulation.Right)
+                //if (backgroundCharacterList[i].getRec().Right < 0 || backgroundCharacterList[i].getRec().Left > screenEncapsulation.getRec().Right)
                 //{
                 //    backgroundCharacterList[i].texture.Dispose();
                 //}
@@ -606,7 +628,7 @@ namespace ChaosRunner
 
         public void addEnemies()
         {
-            if(addEnemyCooldown % 300 == 0 && addEnemyCooldown != 0)
+            if(addEnemyCooldown % addEnemyInterval == 0 && addEnemyCooldown != 0)
             {
                 if (enemyLimit < enemiesList.Count && enemyFreezeCooldown == 0)
                 {
@@ -626,12 +648,12 @@ namespace ChaosRunner
 
         public void enemyMovement()
         {
-            //wallBouncer.Move(screenEncapsulation);
+            //wallBouncer.Move(screenEncapsulation.getRec());
             if (enemyFreezeCooldown == 0)
             {
                 for (int i = 0; i < activeEnemies.Count; ++i)
                 {
-                    activeEnemies[i].Move(screenEncapsulation);
+                    activeEnemies[i].Move(screenEncapsulation.getRec(), ref playerSpeed);
                 }
             }
         }
@@ -655,7 +677,7 @@ namespace ChaosRunner
             bool shouldChoose = false;
             for (int i = 0; i < activeEnemies.Count; ++i)
             {
-                if(activeEnemies[i].getRec().Right <= screenEncapsulation.Left)
+                if(activeEnemies[i].getRec().Right <= screenEncapsulation.getRec().Left)
                 {
                     activeEnemies[i].isMoving = false;
                     //activeEnemies.RemoveAt(i);
@@ -713,7 +735,7 @@ namespace ChaosRunner
             {
                 for (int i = 0; i < activeEnemies.Count; ++i)
                 {
-                    if (activeEnemies[i].getRec().Right > screenEncapsulation.Left && activeEnemies[i].isMoving)
+                    if (activeEnemies[i].getRec().Right > screenEncapsulation.getRec().Left && activeEnemies[i].isMoving)
                     {
                         activeEnemies[i].addToRecX(sideScrollSpeed);
                     }
@@ -724,7 +746,7 @@ namespace ChaosRunner
             //{
                 for (int i = 0; i < (-1 * sideScrollSpeed / 2 + 2); ++i)
                 {
-                    if (player.getRecX() > screenEncapsulation.Left)
+                    if (player.getRecX() > screenEncapsulation.getRec().Left)
                     {
                         player.addToRecX(-1);
                     }
@@ -739,11 +761,14 @@ namespace ChaosRunner
 
         public void drawGameplay()
         {
+
             for (int i = 0; i < backgroundCharacterList.Count; i++)
             {
                 backgroundCharacterList[i].drawCharacter(spriteBatch);
 
             }
+            screenEncapsulation.drawCharacter(spriteBatch);
+
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
@@ -755,10 +780,7 @@ namespace ChaosRunner
             }
             //spriteBatch.DrawString(scoreFont, "texture: " + collectibleObjectsList[0].texture, new Vector2(screenWidth - 300, screenHeight - 110), Color.Black);
 
-            if (playerHitCooldown == 0 || playerHitCooldown % 6 != 0)
-            {
-                player.drawCharacter(spriteBatch, Color.Red);
-            }
+            
             healthBarOutline.drawCharacter(spriteBatch);
             healthBar.drawCharacter(spriteBatch, Color.Red);
             spriteBatch.DrawString(scoreFont, playerHealth.ToString(), new Vector2(healthBarOutline.getRec().Center.X - 12, healthBarOutline.getRec().Center.Y - 8), Color.White);
@@ -779,15 +801,20 @@ namespace ChaosRunner
             }
             //spriteBatch.DrawString(testFont, "X: ", new Vector2(screenWidth * 2 / 3, screenHeight * 10 / 9), Color.Black);
 
-            //spriteBatch.DrawString(scoreFont, "gameFreezeCooldown: " + enemyFreezeCooldown, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
+            spriteBatch.DrawString(scoreFont, "playerSpeed: " + playerSpeed, new Vector2(screenWidth - 300, screenHeight - 180), Color.Black);
             spriteBatch.DrawString(scoreFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.Black);
-            //spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
+            spriteBatch.DrawString(scoreFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.Black);
 
 
             //score += 5;
             spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 10, 50), Color.Black);
 
             //spriteBatch.DrawString(scoreFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
+
+            if (playerHitCooldown == 0 || playerHitCooldown % 6 != 0)
+            {
+                player.drawCharacter(spriteBatch, Color.Red);
+            }
 
         }
 

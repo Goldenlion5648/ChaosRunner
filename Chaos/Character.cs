@@ -70,9 +70,73 @@ namespace ChaosRunner
         {
             characterRec.X += newValue;
         }
+        public void addToRecX(int newValue, Rectangle boundsRec)
+        {
+            if (newValue > 0 && characterRec.Right + 1 < boundsRec.Right)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.X += 1;
+
+                }
+            }
+            else if (newValue < 0 && characterRec.Left - 1 > boundsRec.Left)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.X -= 1;
+
+                }
+            }
+        }
+
+        public void adjustToBeInBounds(int newValue, Rectangle boundsRec)
+        {
+            if (characterRec.Right + 1 < boundsRec.Right)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.X += 1;
+
+                }
+            }
+            else if (characterRec.Left - 1 > boundsRec.Left)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.X -= 1;
+
+                }
+            }
+            else if (characterRec.Bottom + 1 < boundsRec.Bottom)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.Y += 1;
+
+                }
+            }
+            else if (characterRec.Top - 1 > boundsRec.Top)
+            {
+                for (int i = 0; i < newValue; i++)
+                {
+                    characterRec.Y -= 1;
+
+                }
+            }
+        }
         public void addToRecX()
         {
             characterRec.X += 1;
+        }
+
+        public void shrinkUniformly(int amountToShrinkEachSide)
+        {
+            characterRec.X += amountToShrinkEachSide;
+            characterRec.Width -= amountToShrinkEachSide * 2;
+
+            characterRec.Y += amountToShrinkEachSide;
+            characterRec.Height -= amountToShrinkEachSide * 2;
         }
 
 

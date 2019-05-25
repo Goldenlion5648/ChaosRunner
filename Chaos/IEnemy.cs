@@ -14,6 +14,6 @@ namespace ChaosRunner
         //int MyProperty { get; set; }
 
 
-        void Move(Rectangle boundsRec);
+        void Move(Rectangle boundsRec, ref int baseSpeed);
     }
 }

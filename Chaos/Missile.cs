@@ -24,8 +24,10 @@ namespace ChaosRunner
 
 
 
-        public override void Move(Rectangle boundsRec)
+        public override void Move(Rectangle boundsRec, ref int baseSpeed)
         {
+            speed = baseSpeed + 3;
+
             if (isMoving)
             {
                 for (int i = 0; i < speed; ++i)

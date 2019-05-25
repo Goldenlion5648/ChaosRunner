@@ -30,8 +30,10 @@ namespace ChaosRunner
 
         }
 
-        public override void Move(Rectangle boundsRec)
+        public override void Move(Rectangle boundsRec, ref int baseSpeed)
         {
+            speed = baseSpeed - 2;
+
             if (characterRec.Intersects(boundsRec) && isMoving)
             {
                 if (isMovingUp)

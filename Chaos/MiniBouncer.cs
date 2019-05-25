@@ -50,8 +50,10 @@ namespace ChaosRunner
             hasSetNewPos = true;
         }
 
-        public override void Move(Rectangle boundsRec)
+        public override void Move(Rectangle boundsRec, ref int baseSpeed)
         {
+
+            speed = baseSpeed - 2;
             if(hasSetNewPos)
             {
                 upperBound = characterRec.Top - 70;

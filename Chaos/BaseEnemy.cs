@@ -36,7 +36,7 @@ namespace ChaosRunner
 
         }
 
-        public virtual void Move(Rectangle boundsRec)
+        public virtual void Move(Rectangle boundsRec, ref int baseSpeed)
         {
             //characterRec.X -= 10;
         }
