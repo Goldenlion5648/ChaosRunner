@@ -90,38 +90,32 @@ namespace ChaosRunner
             }
         }
 
-        public void adjustToBeInBounds(int newValue, Rectangle boundsRec)
+        public void adjustToBeInBounds(Rectangle boundsRec)
         {
-            if (characterRec.Right + 1 < boundsRec.Right)
-            {
-                for (int i = 0; i < newValue; i++)
-                {
-                    characterRec.X += 1;
+            bool shouldKeepAdjusting = true;
 
-                }
-            }
-            else if (characterRec.Left - 1 > boundsRec.Left)
+            while (shouldKeepAdjusting)
             {
-                for (int i = 0; i < newValue; i++)
+                shouldKeepAdjusting = false;
+                if (characterRec.Right + 1 > boundsRec.Right)
                 {
                     characterRec.X -= 1;
-
+                    shouldKeepAdjusting = true;
                 }
-            }
-            else if (characterRec.Bottom + 1 < boundsRec.Bottom)
-            {
-                for (int i = 0; i < newValue; i++)
+                if (characterRec.Left - 1 < boundsRec.Left)
                 {
-                    characterRec.Y += 1;
-
+                    characterRec.X += 1;
+                    shouldKeepAdjusting = true;
                 }
-            }
-            else if (characterRec.Top - 1 > boundsRec.Top)
-            {
-                for (int i = 0; i < newValue; i++)
+                if (characterRec.Bottom + 1 > boundsRec.Bottom)
                 {
                     characterRec.Y -= 1;
-
+                    shouldKeepAdjusting = true;
+                }
+                if (characterRec.Top - 1 < boundsRec.Top)
+                {
+                    characterRec.Y += 1;
+                    shouldKeepAdjusting = true;
                 }
             }
         }
@@ -132,13 +126,25 @@ namespace ChaosRunner
 
         public void shrinkUniformly(int amountToShrinkEachSide)
         {
-            characterRec.X += amountToShrinkEachSide;
-            characterRec.Width -= amountToShrinkEachSide * 2;
 
-            characterRec.Y += amountToShrinkEachSide;
-            characterRec.Height -= amountToShrinkEachSide * 2;
+            if (characterRec.Width > (double)(1.4 * (double)characterRec.Height))
+            {
+                characterRec.X += amountToShrinkEachSide;
+                characterRec.Width -= amountToShrinkEachSide * 2;
+
+                characterRec.Y += amountToShrinkEachSide * 2;
+                characterRec.Height -= amountToShrinkEachSide * 4;
+            }
+            else
+            {
+                characterRec.X += amountToShrinkEachSide;
+                characterRec.Width -= amountToShrinkEachSide * 2;
+
+                characterRec.Y += amountToShrinkEachSide;
+                characterRec.Height -= amountToShrinkEachSide * 2;
+
+            }
         }
-
 
         public virtual void setRecY(int newValue)
         {

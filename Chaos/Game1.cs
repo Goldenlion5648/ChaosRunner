@@ -331,17 +331,21 @@ namespace ChaosRunner
 
         public void increaseDifficulty()
         {
-            if(gameClock % 300 == 0 && gameClock != 0)
+            if(gameClock > 1000 && gameClock % 250 == 0 && gameClock != 0)
             {
-                playerSpeed += 1;
-
-                if (addEnemyInterval >= 40)
+                if (gameClock % 500 == 0)
                 {
-                    addEnemyInterval -= 10;
+                    playerSpeed += 1;
+
                 }
 
-                screenEncapsulation.shrinkUniformly(4);
-                player.adjustToBeInBounds(4, screenEncapsulation.getRec());
+
+
+                if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight)
+                {
+                    screenEncapsulation.shrinkUniformly(1);
+                    player.adjustToBeInBounds(screenEncapsulation.getRec());
+                }
 
 
             }
@@ -702,15 +706,6 @@ namespace ChaosRunner
 
         public void chooseEnemiesToMove()
         {
-            //enemiesList[3].isMoving = true;
-            //enemiesMovingCurrently = 0;
-            //for (int i = 0; i < activeEnemies.Count;)
-            //{
-            //    activeEnemies[i].isMoving = false;
-            //    activeEnemies.RemoveAt(i);
-
-            //}
-            //Console.WriteLine("Line 386 activeEnemyCount: " + activeEnemies.Count);
             enemiesMovingCurrently = activeEnemies.Count;
 
             while (enemiesMovingCurrently < enemyLimit)

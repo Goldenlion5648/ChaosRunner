@@ -16,8 +16,8 @@ namespace ChaosRunner
         //private int speed = 5;
         //private bool isMovingUp = true;
 
-        public int upperBound{ get; set; }
-        public int lowerBound{ get; set; }
+        public int topBound{ get; set; }
+        public int bottomBound{ get; set; }
 
         public bool hasSetNewPos { get; set; }
 
@@ -32,8 +32,8 @@ namespace ChaosRunner
             this.characterRec = rec;
             speed = 5;
 
-            upperBound = characterRec.Top - 70;
-            lowerBound = characterRec.Bottom + 70;
+            topBound = characterRec.Top - 70;
+            bottomBound = characterRec.Bottom + 70;
 
 
 
@@ -56,8 +56,8 @@ namespace ChaosRunner
             speed = baseSpeed - 2;
             if(hasSetNewPos)
             {
-                upperBound = characterRec.Top - 70;
-                lowerBound = characterRec.Bottom + 70;
+                topBound = characterRec.Top - 70;
+                bottomBound = characterRec.Bottom + 70;
                 hasSetNewPos = false;
             }
 
@@ -67,7 +67,7 @@ namespace ChaosRunner
                 {
                     for (int i = 0; i < speed; i++)
                     {
-                        if (characterRec.Bottom < lowerBound)
+                        if (characterRec.Bottom < bottomBound)
                         {
                             characterRec.Y += 1;
                         }
@@ -82,7 +82,7 @@ namespace ChaosRunner
                 {
                     for (int i = 0; i < speed; i++)
                     {
-                        if (characterRec.Top > upperBound)
+                        if (characterRec.Top > topBound)
                         {
                             characterRec.Y -= 1;
                         }
