@@ -51,6 +51,7 @@ namespace ChaosRunner
         int currentCharacterWidth = 50;
 
         int playerHitCooldown = 0;
+        int addEnemyCooldown = 0;
 
         bool didAnimate = true;
 
@@ -439,12 +440,20 @@ namespace ChaosRunner
             {
                 playerHitCooldown--;
             }
+            if (enemyFreezeCooldown == 0)
+            {
+                addEnemyCooldown++;
+            }
             if (enemyFreezeCooldown > 0)
             {
                 enemyFreezeCooldown--;
             }
+
+
             if (playerHealth < 100 && gameClock % 30 == 0)
                 adjustPlayerHealth(-1);
+
+
             gameClock++;
         }
 
@@ -475,6 +484,7 @@ namespace ChaosRunner
                 }
                 else if (collectibleObjectsList[i].texturesArray == healthPackImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
                 {
+                    adjustPlayerHealth(0);
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
                 }
@@ -487,7 +497,7 @@ namespace ChaosRunner
             bool didCollide = false;
             for (int i = 0; i < enemiesList.Count; i++)
             {
-                if (player.getRec().Intersects(enemiesList[i].getRec()))
+                if (player.getRec().Intersects(enemiesList[i].getRec()) && enemyFreezeCooldown == 0)
                 {
                     didCollide = true;
                     if(playerHitCooldown == 0)
@@ -526,9 +536,9 @@ namespace ChaosRunner
 
         public void addEnemies()
         {
-            if(gameClock % 180 == 0 && gameClock != 0)
+            if(addEnemyCooldown % 300 == 0 && addEnemyCooldown != 0)
             {
-                if (enemyLimit < enemiesList.Count)
+                if (enemyLimit < enemiesList.Count && enemyFreezeCooldown == 0)
                 {
                     enemyLimit++;
                 }
