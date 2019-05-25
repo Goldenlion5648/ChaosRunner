@@ -46,6 +46,7 @@
     <Compile Include="Bouncer.cs" />
     <Compile Include="Character.cs" />
     <Compile Include="EnemyDecreaser.cs" />
+    <Compile Include="HealthPack.cs" />
     <Compile Include="ICollectible.cs" />
     <Compile Include="IEnemy.cs" />
     <Compile Include="Game1.cs" />

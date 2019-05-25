@@ -9,9 +9,9 @@ using Microsoft.Xna.Framework.Input;
 
 namespace ChaosRunner
 {
-    public class TimeFreezer : BaseCollectible, ICollectible
+    public class HealthPack : BaseCollectible, ICollectible
     {
-        public TimeFreezer(Texture2D tex, Rectangle rec, Texture2D[] newTexture) : base(tex, rec, newTexture)
+        public HealthPack(Texture2D tex, Rectangle rec, Texture2D[] newTexture) : base(tex, rec, newTexture)
         {
             this.texture = tex;
             this.characterRec = rec;
@@ -22,9 +22,15 @@ namespace ChaosRunner
         {
             if (characterRec.Intersects(boundsRec))
             {
-                if (valueToChange < 1000)
+                if (valueToChange < 100)
                 {
-                    valueToChange += 210;
+                    valueToChange += 40;
+
+                    if(valueToChange > 100)
+                    {
+                        valueToChange = 100;
+                    }
+
                     isOnScreen = false;
                     return true;
                 }
@@ -35,7 +41,7 @@ namespace ChaosRunner
 
         public override void drawCharacter(SpriteBatch sb)
         {
-            sb.Draw(texture, characterRec, Color.LightGoldenrodYellow);
+            sb.Draw(texture, characterRec, Color.White);
         }
     }
 }
