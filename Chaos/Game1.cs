@@ -166,7 +166,7 @@ namespace ChaosRunner
 
             ambientMusic = Content.Load<Song>("shortGameJamMusic2");
             healthSound = Content.Load<SoundEffect>("healthSound2");
-            hurtSound = Content.Load<SoundEffect>("hurtSound2");
+            hurtSound = Content.Load<SoundEffect>("hurtSound3");
 
             for (int i = 0; i < 6; i++)
             {

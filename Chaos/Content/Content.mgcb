@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin ../../../../SavedAssets/GameJam/hurtSound3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:../../../../SavedAssets/GameJam/hurtSound3.wav;hurtSound3.wav
+
 #begin blackSquare.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -138,12 +144,6 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:healthSound2.wav
-
-#begin hurtSound2.mp3
-/importer:Mp3Importer
-/processor:SongProcessor
-/processorParam:Quality=Best
-/build:hurtSound2.mp3
 
 #begin lightningOutline.png
 /importer:TextureImporter
