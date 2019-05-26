@@ -56,19 +56,18 @@ namespace ChaosRunner
 
         bool isExpanderGrown = false;
 
-        //bool shouldEnemiesLoop = false;
+        int gameStartCooldown = 240;
 
         int defaultCharacterHeight = 50;
         int defaultCharacterWidth = 50;
 
-        int currentCharacterHeight = 50;
-        int currentCharacterWidth = 50;
-
         int powerUpScoreWorth = 300;
-        double scoreMultiplier = 1;
+        int scoreMultiplier = 1;
         int powerUpSpawnFrequency = 120;
 
         bool isDoneEnteringScore = false;
+
+        bool shouldEnterName = false;
 
         int powerUpSpawnAttemptsFailed = 0;
 
@@ -77,12 +76,15 @@ namespace ChaosRunner
 
         bool didAnimate = true;
 
+        bool hasInsertedScore = false;
+
         int addEnemyInterval = 300;
 
         int playerSpeed = 7;
         bool isPressingKey = false;
 
-        int [] highScore = new int[3];
+        int[] highScores = new int[3];
+        string[] playerNames = new string[3];
 
         int currentCollectiblesOnScreen = 0;
         int maxCollectiblesOnScreen = 3;
@@ -95,7 +97,7 @@ namespace ChaosRunner
         bool isGamePaused = false;
         bool hasLost = false;
 
-        double score = 0;
+        int score = 300000;
 
         int playerHealth = 100;
 
@@ -111,7 +113,7 @@ namespace ChaosRunner
 
         enum gameState
         {
-            titleScreen, gameplay, lose
+            titleScreen, gameplay, lose, highScoreScreen
         }
 
         gameState state = gameState.gameplay;
@@ -136,6 +138,11 @@ namespace ChaosRunner
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            enemyStartingX = screenWidth + (screenWidth / 10);
+            for (int i = 0; i < 26; i++)
+            {
+                allKeys[i] = (Keys)(65 + i);
+            }
 
             base.Initialize();
         }
@@ -149,7 +156,6 @@ namespace ChaosRunner
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            enemyStartingX = screenWidth + (screenWidth / 10);
 
             player = new Character(Content.Load<Texture2D>("buttonOutline"), new Rectangle((screenWidth / 2) - (defaultCharacterWidth / 2),
                 screenHeight / 2 - defaultCharacterHeight / 2, defaultCharacterWidth, defaultCharacterHeight));
@@ -192,17 +198,11 @@ namespace ChaosRunner
                 expanderImages[i] = Content.Load<Texture2D>("expander" + (i + 1));
             }
 
-            for (int i = 0; i < 26; i++)
-            {
-                allKeys[i] = (Keys)(65 + i);
-            }
+            
 
             ambientMusic = Content.Load<Song>("shortGameJamMusic2");
             healthSound = Content.Load<SoundEffect>("healthSound2");
             hurtSound = Content.Load<SoundEffect>("hurtSound3");
-
-            
-
 
             testFont = Content.Load<SpriteFont>("testFont");
             scoreFont = Content.Load<SpriteFont>("scoreFont");
@@ -211,8 +211,6 @@ namespace ChaosRunner
             TimeFreezer tempTimeFreezer;
             HealthPack tempHealthPack;
             Expander tempExpander;
-
-
 
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
             {
@@ -292,7 +290,6 @@ namespace ChaosRunner
             //tempMiniBouncer = null;
             //tempMissile = null;
 
-            //screenEncapsulation.getRec() = new Rectangle(0, 0, screenWidth, screenHeight);
             screenEncapsulation = new Bouncer(Content.Load<Texture2D>("whiteSquare"), new Rectangle(0, 0, screenWidth, screenHeight));
 
             // TODO: use this.Content to load your game content here
@@ -336,6 +333,9 @@ namespace ChaosRunner
                 case gameState.lose:
                     lose();
                     break;
+                case gameState.highScoreScreen:
+                    highScoreScreen();
+                    break;
             }
             //}
 
@@ -367,9 +367,22 @@ namespace ChaosRunner
 
                 chooseEnemiesToMove();
                 hasDoneStartOfGameCode = true;
-                highScore[0] = Chaos.Properties.Settings.Default.highScore1;
-                highScore[1] = Chaos.Properties.Settings.Default.highScore2;
-                highScore[2] = Chaos.Properties.Settings.Default.highScore3;
+                highScores[0] = Chaos.Properties.Settings.Default.highScore1;
+                highScores[1] = Chaos.Properties.Settings.Default.highScore2;
+                highScores[2] = Chaos.Properties.Settings.Default.highScore3;
+
+                string settingEntry = Chaos.Properties.Settings.Default.names;
+                int underScoreIndex = 0;
+                underScoreIndex = settingEntry.IndexOf("_", underScoreIndex);
+                int currentPos = 0;
+                for (int i = 0; i < highScores.Length; i++)
+                {
+                    playerNames[i] = settingEntry.Substring(currentPos, underScoreIndex - currentPos);
+                    currentPos += underScoreIndex - currentPos + 1;
+                    underScoreIndex = settingEntry.IndexOf("_", underScoreIndex + 1);
+
+                }
+
 
 
             }
@@ -429,24 +442,15 @@ namespace ChaosRunner
                     //}
                 }
 
-
-
-                //if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight)
-                //{
-                //    screenEncapsulation.shrinkUniformly(2);
-                //    player.adjustToBeInBounds(screenEncapsulation.getRec());
-                //}
-
-
             }
-            if(gameClock > 1000 && gameClock % 250 == 0)
+            if (gameClock > 1000 && gameClock % 250 == 0)
             {
-                if(enemyLimit <= 4)
+                if (enemyLimit <= 5)
                 {
                     enemyLimit++;
                 }
             }
-            if(gameClock % 1000 == 0 && gameClock != 0)
+            if (gameClock % 1000 == 0 && gameClock != 0)
             {
                 scoreMultiplier += 1;
             }
@@ -466,40 +470,134 @@ namespace ChaosRunner
             }
         }
 
+        public void highScoreScreen()
+        {
+            
+            if(score >= highScores[highScores.Length - 1] && isDoneEnteringScore == false)
+            {
+                shouldEnterName = true;
+                enterHighScore();
+            }
+            else if (hasInsertedScore == false)
+            {
+                for (int i = 0; i < highScores.Length; i++)
+                {
+                    if (score > highScores[i])
+                    {
+
+                        for (int j = highScores.Length - 1; j > i; j--)
+                        {
+                            highScores[j] = highScores[j - 1];
+                            playerNames[j] = playerNames[j - 1];
+
+                        }
+                        highScores[i] = score;
+                        playerNames[i] = playerName;
+                        i = highScores.Length;
+                    }
+                }
+                hasInsertedScore = true;
+
+            }
+
+            else if(hasInsertedScore || score < highScores[highScores.Length - 1])
+            {
+                if (kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter))
+                {
+                    resetGame();
+                    state = gameState.gameplay;
+                }
+            }
+
+        }
+
         public void lose()
         {
             if (hasLost)
             {
                 MediaPlayer.Stop();
-                if (isDoneEnteringScore == false)
-                {
-                    enterHighScore();
-
-                }
+            }
+            if(kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter))
+            {
+                state = gameState.highScoreScreen;
             }
         }
 
         public void resetGame()
         {
+            screenHeight = 800;
+            screenWidth = 1280;
+            isExpanderGrown = false;
+            gameStartCooldown = 240;
+            defaultCharacterHeight = 50;
+            defaultCharacterWidth = 50;
+            powerUpScoreWorth = 300;
+            scoreMultiplier = 1;
             powerUpSpawnFrequency = 120;
+            isDoneEnteringScore = false;
+            shouldEnterName = false;
             powerUpSpawnAttemptsFailed = 0;
             playerHitCooldown = 0;
             addEnemyCooldown = 0;
+            didAnimate = true;
+            hasInsertedScore = false;
             addEnemyInterval = 300;
             playerSpeed = 7;
             isPressingKey = false;
             currentCollectiblesOnScreen = 0;
             maxCollectiblesOnScreen = 3;
             enemyFreezeCooldown = 0;
+            sideScrollSpeed = -7;
             isGamePaused = false;
             hasLost = false;
             score = 0;
-            playerHealth = 100;
             gameClock = 0;
             enemyStartingX = 0;
             enemyLimit = 5;
             hasDoneStartOfGameCode = false;
             enemiesMovingCurrently = 0;
+            playerHealth = 0;
+            adjustPlayerHealth(-100);
+
+
+
+
+
+            //powerUpSpawnFrequency = 120;
+            //powerUpSpawnAttemptsFailed = 0;
+            //playerHitCooldown = 0;
+            //addEnemyCooldown = 0;
+            //addEnemyInterval = 300;
+            //playerSpeed = 7;
+            //isPressingKey = false;
+            //currentCollectiblesOnScreen = 0;
+            //maxCollectiblesOnScreen = 3;
+            //enemyFreezeCooldown = 0;
+            //isGamePaused = false;
+            //hasLost = false;
+            //score = 0;
+            //adjustPlayerHealth(-100);
+
+            //hasInsertedScore = false;
+
+            //gameClock = 0;
+            ////enemyStartingX = 0;
+            //hasDoneStartOfGameCode = false;
+            //enemyLimit = 5;
+            //hasDoneStartOfGameCode = false;
+            //enemiesMovingCurrently = 0;
+
+            for (int i = 0; i < enemiesList.Count; i++)
+            {
+                enemiesList[i].isMoving = false;
+                enemiesList[i].setRecX(enemyStartingX + rand.Next(10, 80));
+
+            }
+
+            for (int i = 0; i < collectibleObjectsList.Count; i++)
+            {
+                setCharacterPosOffScreen(ref collectibleObjectsList, i);
+            }
 
 
 
@@ -512,35 +610,39 @@ namespace ChaosRunner
 
             foreach (Keys key in allKeys)
             {
-                if(kb.IsKeyDown(Keys.Enter))
+                if(kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter) && playerName.Length > 0)
                 {
                     isDoneEnteringScore = true;
                 }
                 else if(kb.IsKeyDown(key) && oldkb.IsKeyUp(key))
                 {
-                    playerName += key.ToString();
+                    if (playerName.Length <= 12)
+                    {
+                        if (kb.IsKeyDown(Keys.LeftShift) || kb.IsKeyDown(Keys.RightShift))
+                        {
+                            playerName += key.ToString();
 
+                        }
+                        else
+                        {
+                            playerName += key.ToString().ToLower();
+
+                        }
+
+                    }
+                    
                 }
 
+            }
+            if (kb.IsKeyDown(Keys.Back) && oldkb.IsKeyUp(Keys.Back))
+            {
+                if (playerName.Length > 0)
+                {
+                    playerName = playerName.Substring(0, playerName.Length - 1);
+                }
 
             }
 
-        }
-
-        public void onPressedKey(Keys key)
-        {
-
-        }
-
-        private void Window_TextInput(object sender, TextInputEventArgs e)
-        {
-            var pressedKeys = e.Key;
-            var singleChar = e.Character;
-
-            //if(Window.TextInput == "t")
-            //{
-
-            //}
         }
 
         public void spawnCollectible()
@@ -954,6 +1056,12 @@ namespace ChaosRunner
             //}
             screenEncapsulation.drawCharacter(spriteBatch);
 
+            //for (int i = 0; i < highScores.Length; i++)
+            //{
+            //    spriteBatch.DrawString(testFont, playerNames[i], new Vector2(screenWidth - 340, i * 30 + 100), Color.White);
+
+            //}
+
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
@@ -995,14 +1103,10 @@ namespace ChaosRunner
             spriteBatch.DrawString(testFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.White);
             spriteBatch.DrawString(testFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.White);
 
-
             //score += 5;
             spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 50), Color.White);
             if (hasLost)
                 spriteBatch.DrawString(scoreFont, "Your health has hit 0 ", new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 150), Color.White);
-            //spriteBatch.DrawString(scoreFont, Window_TextInput(), new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 190), Color.White);
-
-            //spriteBatch.DrawString(testFont, "didAnimate: " + didAnimate, new Vector2(screenWidth - 300, screenHeight - 150), Color.Black);
 
             if (playerHitCooldown == 0 || playerHitCooldown % 6 != 0)
             {
@@ -1013,8 +1117,49 @@ namespace ChaosRunner
 
         public void drawLose()
         {
-            spriteBatch.DrawString(testFont, "Enter name: " + playerName, new Vector2(screenWidth /2 - 70, screenHeight / 2 - 40), Color.Black);
+            //if (hasInsertedScore == false)
+            //{
+            //    spriteBatch.DrawString(testFont, "Enter name: " + playerName, new Vector2(screenWidth / 2 - 70, screenHeight / 2 - 40), Color.Black);
+            //}
+            //else
+            //{
+            //    for (int i = 0; i < highScores.Length; i++)
+            //    {
+            //        spriteBatch.DrawString(testFont, playerName, new Vector2(screenWidth / 2 - 70, screenHeight / 2 - 40), Color.Black);
 
+            //    }
+            //}
+
+            int seconds = gameClock / 60;
+
+            if(gameClock > 3600)
+            {
+                seconds = (gameClock / 3600) / 60;
+            }
+
+            spriteBatch.DrawString(scoreFont, "You survived for " + gameClock / 3600 + " minute(s)\n  and " + seconds + " second(s)",
+                new Vector2(screenWidth / 2 - 170, screenHeight / 2 - 180), Color.White);
+
+            spriteBatch.DrawString(scoreFont, "Press Enter", new Vector2(screenWidth - 170, screenHeight - 40), Color.White);
+
+
+        }
+
+        public void drawHighScoreScreen()
+        {
+            if(shouldEnterName)
+            {
+                spriteBatch.DrawString(scoreFont, "Enter name: " + playerName, new Vector2(screenWidth / 2 - 130, screenHeight - 80), Color.White);
+
+            }
+
+            for (int i = 0; i < highScores.Length; i++)
+            {
+                spriteBatch.DrawString(scoreFont, i + 1 + ". " + playerNames[i], new Vector2(screenWidth / 2 - 220, i * 40 + 40), Color.White);
+                spriteBatch.DrawString(scoreFont,  highScores[i].ToString(), new Vector2(screenWidth / 2 + 40, i * 40 + 40), Color.White);
+
+
+            }
         }
 
         /// <summary>
@@ -1023,7 +1168,7 @@ namespace ChaosRunner
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
 
             switch (state)
@@ -1036,6 +1181,9 @@ namespace ChaosRunner
                     break;
                 case gameState.lose:
                     drawLose();
+                    break;
+                case gameState.highScoreScreen:
+                    drawHighScoreScreen();
                     break;
             }
 

@@ -37,13 +37,13 @@ namespace Chaos.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("ShapeMaster")]
-        public string scoreOwner1 {
+        [global::System.Configuration.DefaultSettingValueAttribute("ShapeMaster_TimeGuy_Jukes_")]
+        public string names {
             get {
-                return ((string)(this["scoreOwner1"]));
+                return ((string)(this["names"]));
             }
             set {
-                this["scoreOwner1"] = value;
+                this["names"] = value;
             }
         }
         
@@ -61,18 +61,6 @@ namespace Chaos.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("TimeGuy")]
-        public string scoreOwner2 {
-            get {
-                return ((string)(this["scoreOwner2"]));
-            }
-            set {
-                this["scoreOwner2"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("30000")]
         public int highScore3 {
             get {
@@ -80,18 +68,6 @@ namespace Chaos.Properties {
             }
             set {
                 this["highScore3"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Jukes")]
-        public string scoreOwner3 {
-            get {
-                return ((string)(this["scoreOwner3"]));
-            }
-            set {
-                this["scoreOwner3"] = value;
             }
         }
     }
