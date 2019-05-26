@@ -148,7 +148,7 @@ namespace ChaosRunner
             //Chaos.Properties.Settings.Default.highScore2 = 20000;
             //Chaos.Properties.Settings.Default.highScore3 = 10000;
 
-            //Chaos.Properties.Settings.Default.names = "ShapeMaster_TimeGuy_Jukes_";
+            //Chaos.Properties.Settings.Default.names = "ShapeMaster_TimeGuy_JukesAside_";
 
 
             //Chaos.Properties.Settings.Default.Save();
@@ -236,7 +236,7 @@ namespace ChaosRunner
                 expanderImages[i] = Content.Load<Texture2D>("expander" + (i + 1));
             }
 
-            
+
 
             ambientMusic = Content.Load<Song>("shortGameJamMusic2");
             healthSound = Content.Load<SoundEffect>("healthSound2");
@@ -481,7 +481,7 @@ namespace ChaosRunner
             else
             {
                 MediaPlayer.Pause();
-                
+
             }
 
         }
@@ -541,8 +541,8 @@ namespace ChaosRunner
 
         public void highScoreScreen()
         {
-            
-            if(score >= highScores[highScores.Length - 1] && isDoneEnteringScore == false)
+
+            if (score >= highScores[highScores.Length - 1] && isDoneEnteringScore == false)
             {
                 shouldEnterName = true;
                 enterHighScore();
@@ -581,7 +581,7 @@ namespace ChaosRunner
 
             }
 
-            else if(hasInsertedScore || score < highScores[highScores.Length - 1])
+            else if (hasInsertedScore || score < highScores[highScores.Length - 1])
             {
                 if (kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter))
                 {
@@ -598,7 +598,7 @@ namespace ChaosRunner
             {
                 MediaPlayer.Stop();
             }
-            if(kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter))
+            if (kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter))
             {
                 state = gameState.highScoreScreen;
             }
@@ -608,6 +608,8 @@ namespace ChaosRunner
         {
             addEnemyCooldown = 0;
             addEnemyInterval = 300;
+
+            playerHealth = 0;
             adjustPlayerHealth(-100);
             currentCollectiblesOnScreen = 0;
             defaultCharacterHeight = 50;
@@ -642,7 +644,7 @@ namespace ChaosRunner
 
 
             player.setRecX(screenWidth / 2);
-            player.setRecY(screenHeight/ 2);
+            player.setRecY(screenHeight / 2);
             //screenEncapsulation = new Bouncer(Content.Load<Texture2D>("whiteSquare"), new Rectangle(0, 0, screenWidth, screenHeight));
             screenEncapsulation.setRecX(0);
             screenEncapsulation.setRecY(0);
@@ -696,11 +698,11 @@ namespace ChaosRunner
 
             foreach (Keys key in allKeys)
             {
-                if(kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter) && playerName.Length > 0)
+                if (kb.IsKeyDown(Keys.Enter) && oldkb.IsKeyUp(Keys.Enter) && playerName.Length > 0)
                 {
                     isDoneEnteringScore = true;
                 }
-                else if(kb.IsKeyDown(key) && oldkb.IsKeyUp(key))
+                else if (kb.IsKeyDown(key) && oldkb.IsKeyUp(key))
                 {
                     if (playerName.Length <= 12)
                     {
@@ -716,7 +718,7 @@ namespace ChaosRunner
                         }
 
                     }
-                    
+
                 }
 
             }
@@ -734,7 +736,7 @@ namespace ChaosRunner
         public void spawnCollectible()
         {
             int amountToSubtract = 3;
-            if(gameClock > 1000 && screenEncapsulation.getRec().Height + 10 < screenHeight)
+            if (gameClock > 1000 && screenEncapsulation.getRec().Height + 10 < screenHeight)
             {
                 amountToSubtract = 0;
             }
@@ -785,7 +787,7 @@ namespace ChaosRunner
             {
                 isGamePaused = !isGamePaused;
 
-                if(MediaPlayer.State == MediaState.Paused)
+                if (MediaPlayer.State == MediaState.Paused)
                 {
                     MediaPlayer.Resume();
                 }
@@ -887,7 +889,6 @@ namespace ChaosRunner
                 //state = gameState.lose;
                 hasLost = true;
                 state = gameState.lose;
-                healthBar.setRecWidth(0);
 
             }
             else
@@ -1151,7 +1152,7 @@ namespace ChaosRunner
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
-                if(collectibleObjectsList[i].texturesArray == expanderImages)
+                if (collectibleObjectsList[i].texturesArray == expanderImages)
                 {
                     collectibleObjectsList[i].drawCharacter(spriteBatch, Color.Orange);
 
@@ -1187,9 +1188,9 @@ namespace ChaosRunner
 
             //spriteBatch.DrawString(testFont, "nameFromFile " + Chaos.Properties.Settings.Default.names, new Vector2(screenWidth - 400, screenHeight - 180), Color.White);
             //spriteBatch.DrawString(testFont, "activeEnemyCount: " + activeEnemies.Count, new Vector2(screenWidth - 300, screenHeight - 40), Color.White);
-           // spriteBatch.DrawString(testFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.White);
-            
-            
+            // spriteBatch.DrawString(testFont, "gameClock: " + gameClock, new Vector2(screenWidth - 300, screenHeight - 70), Color.White);
+
+
             //score += 5;
             spriteBatch.DrawString(scoreFont, "Score: " + score, new Vector2(((screenWidth / 2) - ((score.ToString().Length / 2) * 10)) - 30, 50), Color.White);
             if (hasLost)
@@ -1217,15 +1218,13 @@ namespace ChaosRunner
             //    }
             //}
 
-            int seconds = gameClock / 60;
+            int seconds;
 
-            if(gameClock > 3600)
-            {
-                seconds = (gameClock / 3600) / 60;
-            }
+            seconds = (gameClock % 3600) / 60;
 
-            spriteBatch.DrawString(scoreFont, "You survived for " + gameClock / 3600 + " minute(s)\n  and " + seconds + " second(s)",
-                new Vector2(screenWidth / 2 - 170, screenHeight / 2 - 180), Color.White);
+
+            spriteBatch.DrawString(scoreFont, "You survived for " + gameClock / 3600 + " minute(s)\n       and " + seconds + " second(s)",
+                new Vector2(screenWidth / 2 - 190, screenHeight / 2 - 180), Color.White);
 
             spriteBatch.DrawString(scoreFont, "Press Enter", new Vector2(screenWidth - 170, screenHeight - 40), Color.White);
 
@@ -1237,6 +1236,12 @@ namespace ChaosRunner
             if (shouldEnterName)
             {
                 spriteBatch.DrawString(scoreFont, "Enter name: " + playerName, new Vector2(screenWidth / 2 - 130, screenHeight - 80), Color.White);
+                spriteBatch.DrawString(scoreFont, "You got a\nhigh score!\n  " + score, new Vector2(screenWidth / 2 - 130, screenHeight - 80), Color.White);
+
+            }
+            else
+            {
+                spriteBatch.DrawString(scoreFont, "Your Score: " + score, new Vector2(screenWidth / 2 - 170, screenHeight / 2 - 40), Color.White);
 
             }
 
@@ -1247,10 +1252,10 @@ namespace ChaosRunner
             else
             {
                 spriteBatch.DrawString(scoreFont, "Press Enter\nwhen done", new Vector2(screenWidth - 190, screenHeight - 100), Color.White);
+                spriteBatch.DrawString(scoreFont, "Better luck next time ", new Vector2(screenWidth / 2 - 180, screenHeight /2- 110), Color.White);
 
             }
 
-            spriteBatch.DrawString(scoreFont, "Your Score: " + score, new Vector2(screenWidth / 2 - 130, screenHeight /2 - 110), Color.White);
 
 
 
