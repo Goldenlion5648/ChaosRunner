@@ -208,7 +208,9 @@ namespace ChaosRunner
             {
                 currentFrame = 0;
             }
+            this.texture = null;
             this.texture = texturesArray[currentFrame];
+
         }
 
         public virtual void drawCharacter(SpriteBatch sb)

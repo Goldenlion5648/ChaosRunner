@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 using System;
 using Microsoft.Xna.Framework.Audio;
+using System.Linq;
 
 namespace ChaosRunner
 {
@@ -48,6 +49,8 @@ namespace ChaosRunner
 
         Random rand = new Random();
 
+        Keys[] allKeys = new Keys[26];
+
         int screenHeight = 800;
         int screenWidth = 1280;
 
@@ -65,6 +68,8 @@ namespace ChaosRunner
         double scoreMultiplier = 1;
         int powerUpSpawnFrequency = 120;
 
+        bool isDoneEnteringScore = false;
+
         int powerUpSpawnAttemptsFailed = 0;
 
         int playerHitCooldown = 0;
@@ -77,11 +82,15 @@ namespace ChaosRunner
         int playerSpeed = 7;
         bool isPressingKey = false;
 
+        int [] highScore = new int[3];
+
         int currentCollectiblesOnScreen = 0;
         int maxCollectiblesOnScreen = 3;
 
         int enemyFreezeCooldown = 0;
         int sideScrollSpeed = -7;
+
+        string playerName = "";
 
         bool isGamePaused = false;
         bool hasLost = false;
@@ -151,12 +160,6 @@ namespace ChaosRunner
             healthBarOutline = new Character(Content.Load<Texture2D>("blackSquare"), new Rectangle(screenWidth - 255,
                 35, defaultCharacterWidth * 4 + 10, defaultCharacterHeight));
 
-            //backgroundImages1[0] = Content.Load<Texture2D>("redOrange");
-            //backgroundImages1[1] = Content.Load<Texture2D>("orangeYellow");
-            //backgroundImages1[2] = Content.Load<Texture2D>("yellowGreen");
-            //backgroundImages1[3] = Content.Load<Texture2D>("greenBlue");
-            //backgroundImages1[4] = Content.Load<Texture2D>("bluePurple");
-            //backgroundImages1[5] = Content.Load<Texture2D>("purpleRed");
 
             backgroundImages1[0] = Content.Load<Texture2D>("redOrange");
             backgroundImages2[0] = Content.Load<Texture2D>("orangeYellow");
@@ -165,26 +168,8 @@ namespace ChaosRunner
             backgroundImages1[2] = Content.Load<Texture2D>("bluePurple");
             backgroundImages2[2] = Content.Load<Texture2D>("purpleRed");
 
-            //for (int i = 1; i < 6; i += 2)
-            //
-            //backgroundCharacterList.Add(null);
-            //backgroundCharacterList[i] = new Character(backgroundImages[i], new Rectangle(1400 * i, 0, 1400, screenHeight), backgroundImages);
             backgroundCharacter1 = new Character(new Rectangle(1400 * 0, 0, 1400, screenHeight), ref backgroundImages1);
-
             backgroundCharacter2 = new Character(new Rectangle(1400 * 1, 0, 1400, screenHeight), ref backgroundImages2);
-
-            //for (int i = 0; i < backgroundImages1.Length; i++)
-            //{
-            //    backgroundImages1[i].Dispose();
-            //    backgroundImages2[i].Dispose();
-            //}
-                //backgroundCharacterList[i].texture = null;
-
-
-           // }
-
-            //enemyDecreaserImages[0] = Content.Load<Texture2D>("lightningOutline1");
-            //enemyDecreaserImages[1] = Content.Load<Texture2D>("lightningOutline2");
 
 
             for (int i = 0; i < enemyDecreaserImages.Length; i++)
@@ -205,6 +190,11 @@ namespace ChaosRunner
             for (int i = 0; i < expanderImages.Length; i++)
             {
                 expanderImages[i] = Content.Load<Texture2D>("expander" + (i + 1));
+            }
+
+            for (int i = 0; i < 26; i++)
+            {
+                allKeys[i] = (Keys)(65 + i);
             }
 
             ambientMusic = Content.Load<Song>("shortGameJamMusic2");
@@ -237,6 +227,11 @@ namespace ChaosRunner
                 collectibleObjectsList.Add(tempTimeFreezer);
                 collectibleObjectsList.Add(tempHealthPack);
 
+                //tempEnemyDecreaser.texture.Dispose();
+                //tempTimeFreezer.texture.Dispose();
+                //tempHealthPack.texture.Dispose();
+
+
             }
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
             {
@@ -244,12 +239,19 @@ namespace ChaosRunner
                 rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 / 2, defaultCharacterHeight * 3 / 2), expanderImages);
                 collectibleObjectsList.Add(tempExpander);
 
+                //tempExpander.texture.Dispose();
+
             }
 
             tempEnemyDecreaser = null;
             tempTimeFreezer = null;
             tempHealthPack = null;
             tempExpander = null;
+
+            //tempEnemyDecreaser.texture.Dispose();
+            //tempTimeFreezer.texture.Dispose();
+            //tempHealthPack.texture.Dispose();
+            //tempExpander.texture.Dispose();
 
             Bouncer tempBouncer;
             MiniBouncer tempMiniBouncer;
@@ -280,12 +282,15 @@ namespace ChaosRunner
                 //tempBouncer.texture.Dispose();
                 //tempMiniBouncer.texture.Dispose();
                 //tempMissile.texture.Dispose();
+                tempBouncer = null;
+                tempMiniBouncer = null;
+                tempMissile = null;
 
             }
 
-            tempBouncer = null;
-            tempMiniBouncer = null;
-            tempMissile = null;
+            //tempBouncer = null;
+            //tempMiniBouncer = null;
+            //tempMissile = null;
 
             //screenEncapsulation.getRec() = new Rectangle(0, 0, screenWidth, screenHeight);
             screenEncapsulation = new Bouncer(Content.Load<Texture2D>("whiteSquare"), new Rectangle(0, 0, screenWidth, screenHeight));
@@ -362,6 +367,10 @@ namespace ChaosRunner
 
                 chooseEnemiesToMove();
                 hasDoneStartOfGameCode = true;
+                highScore[0] = Chaos.Properties.Settings.Default.highScore1;
+                highScore[1] = Chaos.Properties.Settings.Default.highScore2;
+                highScore[2] = Chaos.Properties.Settings.Default.highScore3;
+
 
             }
         }
@@ -461,15 +470,13 @@ namespace ChaosRunner
         {
             if (hasLost)
             {
+                MediaPlayer.Stop();
+                if (isDoneEnteringScore == false)
+                {
+                    enterHighScore();
 
+                }
             }
-        }
-
-        public void getInput()
-        {
-
-
-            Window.TextInput += Window_TextInput;
         }
 
         public void resetGame()
@@ -495,6 +502,33 @@ namespace ChaosRunner
             enemiesMovingCurrently = 0;
 
 
+
+        }
+
+        public void enterHighScore()
+        {
+            //Keys[] pressedKeys = kb.GetPressedKeys();
+            //Keys[] lastPressedKeys = new Keys[0];
+
+            foreach (Keys key in allKeys)
+            {
+                if(kb.IsKeyDown(Keys.Enter))
+                {
+                    isDoneEnteringScore = true;
+                }
+                else if(kb.IsKeyDown(key) && oldkb.IsKeyUp(key))
+                {
+                    playerName += key.ToString();
+
+                }
+
+
+            }
+
+        }
+
+        public void onPressedKey(Keys key)
+        {
 
         }
 
@@ -562,6 +596,11 @@ namespace ChaosRunner
             if (kb.IsKeyDown(Keys.P) && oldkb.IsKeyUp(Keys.P))
             {
                 isGamePaused = !isGamePaused;
+
+                if(MediaPlayer.State == MediaState.Paused)
+                {
+                    MediaPlayer.Resume();
+                }
             }
 
             if (isGamePaused == true)
@@ -659,8 +698,14 @@ namespace ChaosRunner
                 //playerHealth = 100;
                 //state = gameState.lose;
                 hasLost = true;
+                state = gameState.lose;
+                healthBar.setRecWidth(0);
+
             }
-            healthBar.setRecWidth(playerHealth * 2);
+            else
+            {
+                healthBar.setRecWidth(playerHealth * 2);
+            }
         }
 
         public void checkCollectibleCollisions()
@@ -731,33 +776,6 @@ namespace ChaosRunner
 
         public void backgroundLogic()
         {
-            //for (int i = 0; i < backgroundCharacterList.Count; i++)
-            //{
-            //    backgroundCharacterList[i].addToRecX(-10);
-            //    if (backgroundCharacterList[i].getRec().Right < 0)
-            //    {
-            //        if (i == 0)
-            //        {
-            //            backgroundCharacterList[i].setRecX(backgroundCharacterList[backgroundCharacterList.Count - 1].getRec().Right - 10);
-            //        }
-            //        else
-            //        {
-            //            backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
-
-            //        }
-            //    }
-
-            //    if (backgroundCharacterList[i].getRec().Left < screenWidth + 20)
-            //    {
-            //        backgroundCharacterList[i].texture = backgroundCharacterList[i].texturesArray[0];
-            //    }
-            //    else
-            //    {
-            //        backgroundCharacterList[i].texture.Dispose();
-            //        //backgroundCharacterList[i].texture = null;
-            //    }
-
-            //}
 
             if (backgroundCharacter1.getRec().Right < 0)
             {
@@ -939,6 +957,11 @@ namespace ChaosRunner
 
             for (int i = 0; i < collectibleObjectsList.Count; i++)
             {
+                if(collectibleObjectsList[i].texturesArray == expanderImages)
+                {
+                    collectibleObjectsList[i].drawCharacter(spriteBatch, Color.Orange);
+
+                }
                 collectibleObjectsList[i].drawCharacter(spriteBatch);
                 //spriteBatch.DrawString(testFont, "X: " + collectibleObjectsList[i].getRecX(), new Vector2(screenWidth - 340, i * 30 + 40), Color.Black);
                 //spriteBatch.DrawString(testFont, "Y: " + collectibleObjectsList[i].getRecY(), new Vector2(screenWidth - 250, i * 30 + 40), Color.Black);
@@ -990,6 +1013,7 @@ namespace ChaosRunner
 
         public void drawLose()
         {
+            spriteBatch.DrawString(testFont, "Enter name: " + playerName, new Vector2(screenWidth /2 - 70, screenHeight / 2 - 40), Color.Black);
 
         }
 
