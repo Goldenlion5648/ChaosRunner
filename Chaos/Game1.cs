@@ -27,8 +27,9 @@ namespace ChaosRunner
         List<BaseEnemy> activeEnemies = new List<BaseEnemy>(1);
         //List<Character> allObjectsList = new List<Character>(1);
 
-        List<Character> backgroundCharacterList = new List<Character>(6);
-        Texture2D[] backgroundImages = new Texture2D[6];
+        //List<Character> backgroundCharacterList = new List<Character>(6);
+        Texture2D[] backgroundImages1 = new Texture2D[3];
+        Texture2D[] backgroundImages2 = new Texture2D[3];
         Texture2D[] enemyDecreaserImages = new Texture2D[2];
         Texture2D[] timeFreezerImages = new Texture2D[2];
         Texture2D[] healthPackImages = new Texture2D[2];
@@ -36,6 +37,8 @@ namespace ChaosRunner
 
         Song ambientMusic;
         SoundEffect healthSound, hurtSound;
+
+        Character backgroundCharacter1, backgroundCharacter2;
 
 
         int numOfEachEnemyType = 4;
@@ -47,6 +50,8 @@ namespace ChaosRunner
 
         int screenHeight = 800;
         int screenWidth = 1280;
+
+        bool isExpanderGrown = false;
 
         //bool shouldEnemiesLoop = false;
 
@@ -146,12 +151,37 @@ namespace ChaosRunner
             healthBarOutline = new Character(Content.Load<Texture2D>("blackSquare"), new Rectangle(screenWidth - 255,
                 35, defaultCharacterWidth * 4 + 10, defaultCharacterHeight));
 
-            backgroundImages[0] = Content.Load<Texture2D>("redOrange");
-            backgroundImages[1] = Content.Load<Texture2D>("orangeYellow");
-            backgroundImages[2] = Content.Load<Texture2D>("yellowGreen");
-            backgroundImages[3] = Content.Load<Texture2D>("greenBlue");
-            backgroundImages[4] = Content.Load<Texture2D>("bluePurple");
-            backgroundImages[5] = Content.Load<Texture2D>("purpleRed");
+            //backgroundImages1[0] = Content.Load<Texture2D>("redOrange");
+            //backgroundImages1[1] = Content.Load<Texture2D>("orangeYellow");
+            //backgroundImages1[2] = Content.Load<Texture2D>("yellowGreen");
+            //backgroundImages1[3] = Content.Load<Texture2D>("greenBlue");
+            //backgroundImages1[4] = Content.Load<Texture2D>("bluePurple");
+            //backgroundImages1[5] = Content.Load<Texture2D>("purpleRed");
+
+            backgroundImages1[0] = Content.Load<Texture2D>("redOrange");
+            backgroundImages2[0] = Content.Load<Texture2D>("orangeYellow");
+            backgroundImages1[1] = Content.Load<Texture2D>("yellowGreen");
+            backgroundImages2[1] = Content.Load<Texture2D>("greenBlue");
+            backgroundImages1[2] = Content.Load<Texture2D>("bluePurple");
+            backgroundImages2[2] = Content.Load<Texture2D>("purpleRed");
+
+            //for (int i = 1; i < 6; i += 2)
+            //
+            //backgroundCharacterList.Add(null);
+            //backgroundCharacterList[i] = new Character(backgroundImages[i], new Rectangle(1400 * i, 0, 1400, screenHeight), backgroundImages);
+            backgroundCharacter1 = new Character(new Rectangle(1400 * 0, 0, 1400, screenHeight), ref backgroundImages1);
+
+            backgroundCharacter2 = new Character(new Rectangle(1400 * 1, 0, 1400, screenHeight), ref backgroundImages2);
+
+            //for (int i = 0; i < backgroundImages1.Length; i++)
+            //{
+            //    backgroundImages1[i].Dispose();
+            //    backgroundImages2[i].Dispose();
+            //}
+                //backgroundCharacterList[i].texture = null;
+
+
+           // }
 
             //enemyDecreaserImages[0] = Content.Load<Texture2D>("lightningOutline1");
             //enemyDecreaserImages[1] = Content.Load<Texture2D>("lightningOutline2");
@@ -181,15 +211,7 @@ namespace ChaosRunner
             healthSound = Content.Load<SoundEffect>("healthSound2");
             hurtSound = Content.Load<SoundEffect>("hurtSound3");
 
-            for (int i = 0; i < 6; i++)
-            {
-                backgroundCharacterList.Add(null);
-                backgroundCharacterList[i] = new Character(backgroundImages[i], new Rectangle(1400 * i, 0, 1400, screenHeight));
-
-                //backgroundCharacterList[i].texture = null;
-
-
-            }
+            
 
 
             testFont = Content.Load<SpriteFont>("testFont");
@@ -336,6 +358,8 @@ namespace ChaosRunner
                 MediaPlayer.Play(ambientMusic);
                 MediaPlayer.IsRepeating = true;
 
+                //backgroundCharacter2.currentFrame = 1;
+
                 chooseEnemiesToMove();
                 hasDoneStartOfGameCode = true;
 
@@ -413,6 +437,11 @@ namespace ChaosRunner
                     enemyLimit++;
                 }
             }
+            if(gameClock % 1000 == 0 && gameClock != 0)
+            {
+                scoreMultiplier += 1;
+            }
+
             if (gameClock > 1000 && gameClock != 0 && gameClock % 120 == 0)
             {
                 //if (enemyLimit < enemiesList.Count)
@@ -702,47 +731,56 @@ namespace ChaosRunner
 
         public void backgroundLogic()
         {
-            for (int i = 0; i < backgroundCharacterList.Count; i++)
+            //for (int i = 0; i < backgroundCharacterList.Count; i++)
+            //{
+            //    backgroundCharacterList[i].addToRecX(-10);
+            //    if (backgroundCharacterList[i].getRec().Right < 0)
+            //    {
+            //        if (i == 0)
+            //        {
+            //            backgroundCharacterList[i].setRecX(backgroundCharacterList[backgroundCharacterList.Count - 1].getRec().Right - 10);
+            //        }
+            //        else
+            //        {
+            //            backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
+
+            //        }
+            //    }
+
+            //    if (backgroundCharacterList[i].getRec().Left < screenWidth + 20)
+            //    {
+            //        backgroundCharacterList[i].texture = backgroundCharacterList[i].texturesArray[0];
+            //    }
+            //    else
+            //    {
+            //        backgroundCharacterList[i].texture.Dispose();
+            //        //backgroundCharacterList[i].texture = null;
+            //    }
+
+            //}
+
+            if (backgroundCharacter1.getRec().Right < 0)
             {
-                backgroundCharacterList[i].addToRecX(-10);
-                if (backgroundCharacterList[i].getRec().Right < 0)
-                {
-                    if (i == 0)
-                    {
-                        backgroundCharacterList[i].setRecX(backgroundCharacterList[backgroundCharacterList.Count - 1].getRec().Right - 10);
-                    }
-                    else
-                    {
-                        backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
 
-                    }
-                }
+                backgroundCharacter1.setRecX(backgroundCharacter2.getRec().Right);
+                backgroundCharacter1.animate();
 
-                if (backgroundCharacterList[i].getRec().Left < screenWidth + 20)
-                {
-                    backgroundCharacterList[i].texture = backgroundCharacterList[i].texturesArray[0];
-                }
-                else
-                {
-                    backgroundCharacterList[i].texture.Dispose();
-                    backgroundCharacterList[i].texture = null;
-                }
-                //if (backgroundCharacterList[i].getRec().Right < 0 || backgroundCharacterList[i].getRec().Left > screenEncapsulation.getRec().Right)
-                //{
-                //    backgroundCharacterList[i].texture.Dispose();
-                //}
-
-
-                //backgroundCharacterList[i].texture = backgroundImages[i];
-
-
-
-                //if (backgroundCharacterList[i % 6].texture.IsDisposed)
-                //{
-                //    backgroundCharacterList[i % 6].texture = backgroundImages[i % 6];
-                //}
-
+                //backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
             }
+
+            if (backgroundCharacter2.getRec().Right < 0)
+            {
+
+                backgroundCharacter2.setRecX(backgroundCharacter1.getRec().Right);
+                backgroundCharacter2.animate();
+
+
+                //backgroundCharacterList[i].setRecX(backgroundCharacterList[i - 1].getRec().Right);
+            }
+
+            backgroundCharacter1.addToRecX(-10);
+            backgroundCharacter2.addToRecX(-10);
+
         }
 
         public void addEnemies()
@@ -787,6 +825,21 @@ namespace ChaosRunner
                 {
                     collectibleObjectsList[i].animate();
                     didAnimate = true;
+
+                    if (collectibleObjectsList[i].texturesArray == expanderImages)
+                    {
+                        if (isExpanderGrown == false)
+                        {
+                            collectibleObjectsList[i].shrinkUniformly(-6);
+                            isExpanderGrown = true;
+                        }
+                        else
+                        {
+                            collectibleObjectsList[i].shrinkUniformly(6);
+                            isExpanderGrown = false;
+                        }
+
+                    }
 
                 }
             }
@@ -873,11 +926,14 @@ namespace ChaosRunner
         public void drawGameplay()
         {
 
-            for (int i = 0; i < backgroundCharacterList.Count; i++)
-            {
-                backgroundCharacterList[i].drawCharacter(spriteBatch);
+            backgroundCharacter1.drawCharacter(spriteBatch);
+            backgroundCharacter2.drawCharacter(spriteBatch);
 
-            }
+            //for (int i = 0; i < backgroundCharacterList.Count; i++)
+            //{
+            //    backgroundCharacterList[i].drawCharacter(spriteBatch);
+
+            //}
             screenEncapsulation.drawCharacter(spriteBatch);
 
 
@@ -898,7 +954,7 @@ namespace ChaosRunner
 
 
 
-            for (int i = 0; i < activeEnemies.Count; i++)
+            for (int i = 0; i < enemiesList.Count; i++)
             {
                 if (enemyFreezeCooldown == 0 || enemyFreezeCooldown > 60 || (enemyFreezeCooldown < 60 && enemyFreezeCooldown % 6 == 0))
                 {

@@ -49,6 +49,19 @@ namespace ChaosRunner
             totalFrames = newTextures.Length;
         }
 
+        public Character(Rectangle rec, ref Texture2D[] newTextures)
+        {
+            texture = newTextures[0];
+            characterRec = rec;
+            isMoving = false;
+            lengthX = characterRec.Right - characterRec.Left;
+            lengthY = characterRec.Bottom - characterRec.Top;
+
+            texturesArray = newTextures;
+            currentFrame = 0;
+            totalFrames = newTextures.Length;
+        }
+
         public void setRec(Rectangle newValue)
         {
             characterRec = newValue;
@@ -127,23 +140,27 @@ namespace ChaosRunner
         public void shrinkUniformly(int amountToShrinkEachSide)
         {
 
-            if (amountToShrinkEachSide < 0 || characterRec.Width > (double)(1.4 * (double)characterRec.Height))
-            {
-                characterRec.X += amountToShrinkEachSide;
-                characterRec.Width -= amountToShrinkEachSide * 2;
 
+            characterRec.X += amountToShrinkEachSide;
+            characterRec.Width -= amountToShrinkEachSide * 2;
+            if (characterRec.Width > (double)(1.4 * (double)characterRec.Height))
+            {
                 characterRec.Y += amountToShrinkEachSide * 2;
                 characterRec.Height -= amountToShrinkEachSide * 4;
             }
             else
             {
-                characterRec.X += amountToShrinkEachSide;
-                characterRec.Width -= amountToShrinkEachSide * 2;
-
                 characterRec.Y += amountToShrinkEachSide;
                 characterRec.Height -= amountToShrinkEachSide * 2;
-
             }
+
+            //characterRec.X += amountToShrinkEachSide;
+            //characterRec.Width -= amountToShrinkEachSide * 2;
+
+            //characterRec.Y += amountToShrinkEachSide;
+            //characterRec.Height -= amountToShrinkEachSide * 2;
+
+
         }
 
         public virtual void setRecY(int newValue)
