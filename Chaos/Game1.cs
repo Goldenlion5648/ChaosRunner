@@ -718,6 +718,15 @@ namespace ChaosRunner
                     }
                 }
 
+                if (backgroundCharacterList[i].getRec().Left < screenWidth + 20)
+                {
+                    backgroundCharacterList[i].texture = backgroundCharacterList[i].texturesArray[0];
+                }
+                else
+                {
+                    backgroundCharacterList[i].texture.Dispose();
+                    backgroundCharacterList[i].texture = null;
+                }
                 //if (backgroundCharacterList[i].getRec().Right < 0 || backgroundCharacterList[i].getRec().Left > screenEncapsulation.getRec().Right)
                 //{
                 //    backgroundCharacterList[i].texture.Dispose();
@@ -889,7 +898,7 @@ namespace ChaosRunner
 
 
 
-            for (int i = 0; i < enemiesList.Count; i++)
+            for (int i = 0; i < activeEnemies.Count; i++)
             {
                 if (enemyFreezeCooldown == 0 || enemyFreezeCooldown > 60 || (enemyFreezeCooldown < 60 && enemyFreezeCooldown % 6 == 0))
                 {
