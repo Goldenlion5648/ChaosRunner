@@ -32,12 +32,13 @@ namespace ChaosRunner
         Texture2D[] enemyDecreaserImages = new Texture2D[2];
         Texture2D[] timeFreezerImages = new Texture2D[2];
         Texture2D[] healthPackImages = new Texture2D[2];
+        Texture2D[] expanderImages = new Texture2D[2];
 
         Song ambientMusic;
         SoundEffect healthSound, hurtSound;
 
 
-        int numOfEachEnemyType = 5;
+        int numOfEachEnemyType = 4;
 
 
         Character screenEncapsulation;
@@ -171,6 +172,11 @@ namespace ChaosRunner
                 healthPackImages[i] = Content.Load<Texture2D>("healthPack" + (i + 1));
             }
 
+            for (int i = 0; i < expanderImages.Length; i++)
+            {
+                expanderImages[i] = Content.Load<Texture2D>("expander" + (i + 1));
+            }
+
             ambientMusic = Content.Load<Song>("shortGameJamMusic2");
             healthSound = Content.Load<SoundEffect>("healthSound2");
             hurtSound = Content.Load<SoundEffect>("hurtSound3");
@@ -192,6 +198,8 @@ namespace ChaosRunner
             EnemyDecreaser tempEnemyDecreaser;
             TimeFreezer tempTimeFreezer;
             HealthPack tempHealthPack;
+            Expander tempExpander;
+
 
 
             for (int i = 0; i < maxCollectiblesOnScreen; i++)
@@ -207,11 +215,19 @@ namespace ChaosRunner
                 collectibleObjectsList.Add(tempTimeFreezer);
                 collectibleObjectsList.Add(tempHealthPack);
 
+            }
+            for (int i = 0; i < maxCollectiblesOnScreen; i++)
+            {
+                tempExpander = new Expander(expanderImages[0], new Rectangle(screenWidth + 50,
+                rand.Next(10, screenHeight - defaultCharacterHeight), defaultCharacterWidth * 3 / 2, defaultCharacterHeight * 3 / 2), expanderImages);
+                collectibleObjectsList.Add(tempExpander);
 
             }
+
             tempEnemyDecreaser = null;
             tempTimeFreezer = null;
             tempHealthPack = null;
+            tempExpander = null;
 
             Bouncer tempBouncer;
             MiniBouncer tempMiniBouncer;
@@ -239,7 +255,9 @@ namespace ChaosRunner
                 enemiesList.Add(tempBouncer);
                 enemiesList.Add(tempMiniBouncer);
                 enemiesList.Add(tempMissile);
-
+                //tempBouncer.texture.Dispose();
+                //tempMiniBouncer.texture.Dispose();
+                //tempMissile.texture.Dispose();
 
             }
 
@@ -359,22 +377,23 @@ namespace ChaosRunner
             {
                 if (gameClock % 500 == 0)
                 {
-                    playerSpeed += 1;
+                    if (playerSpeed < 16)
+                        playerSpeed += 1;
 
                     if (powerUpSpawnFrequency > 100)
                     {
-                        powerUpSpawnFrequency -= 5;
+                        powerUpSpawnFrequency -= 10;
 
                     }
-                    if (maxCollectiblesOnScreen < 5)
+                    if (maxCollectiblesOnScreen < 6)
                     {
                         maxCollectiblesOnScreen += 1;
                     }
 
-                    if (enemyLimit < enemiesList.Count)
-                    {
-                        enemyLimit++;
-                    }
+                    //if (enemyLimit < enemiesList.Count)
+                    //{
+                    //    enemyLimit++;
+                    //}
                 }
 
 
@@ -387,17 +406,23 @@ namespace ChaosRunner
 
 
             }
-
-            if (gameClock > 1000 && gameClock != 0 && gameClock % 30 == 0)
+            if(gameClock > 1000 && gameClock % 250 == 0)
+            {
+                if(enemyLimit <= 4)
+                {
+                    enemyLimit++;
+                }
+            }
+            if (gameClock > 1000 && gameClock != 0 && gameClock % 120 == 0)
             {
                 //if (enemyLimit < enemiesList.Count)
                 //{
                 //    enemyLimit++;
                 //}
 
-                if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight && enemyFreezeCooldown == 0)
+                if (screenEncapsulation.getRec().Height + 10 > defaultCharacterHeight * 8 && enemyFreezeCooldown == 0)
                 {
-                    screenEncapsulation.shrinkUniformly(1);
+                    screenEncapsulation.shrinkUniformly(2);
                     player.adjustToBeInBounds(screenEncapsulation.getRec());
                 }
             }
@@ -457,16 +482,22 @@ namespace ChaosRunner
 
         public void spawnCollectible()
         {
+            int amountToSubtract = 3;
+            if(gameClock > 1000 && screenEncapsulation.getRec().Height + 10 < screenHeight)
+            {
+                amountToSubtract = 0;
+            }
+
             if (gameClock % powerUpSpawnFrequency == 0 && gameClock != 0 && currentCollectiblesOnScreen < maxCollectiblesOnScreen)
             {
                 randomDecider = rand.Next(1, 4);
                 if (randomDecider == 1 || powerUpSpawnAttemptsFailed >= 2)
                 {
                     powerUpSpawnAttemptsFailed = 0;
-                    randomDecider = rand.Next(0, collectibleObjectsList.Count);
+                    randomDecider = rand.Next(0, collectibleObjectsList.Count - amountToSubtract);
                     while (collectibleObjectsList[randomDecider].isOnScreen == true)
                     {
-                        randomDecider = rand.Next(0, collectibleObjectsList.Count);
+                        randomDecider = rand.Next(0, collectibleObjectsList.Count - amountToSubtract);
 
                     }
                     currentCollectiblesOnScreen++;
@@ -475,7 +506,7 @@ namespace ChaosRunner
                 }
                 else
                 {
-                    //powerUpSpawnAttemptsFailed += 1;
+                    powerUpSpawnAttemptsFailed += 1;
                 }
 
             }
@@ -615,17 +646,27 @@ namespace ChaosRunner
 
                     score += powerUpScoreWorth * scoreMultiplier;
                 }
-                else if (collectibleObjectsList[i].texturesArray == timeFreezerImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyFreezeCooldown))
+                if (collectibleObjectsList[i].texturesArray == timeFreezerImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref enemyFreezeCooldown))
                 {
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
                     healthSound.Play();
                     score += powerUpScoreWorth * scoreMultiplier;
                 }
-                else if (collectibleObjectsList[i].texturesArray == healthPackImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
+                if (collectibleObjectsList[i].texturesArray == healthPackImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
                 {
                     adjustPlayerHealth(0);
                     healthSound.Play();
+
+                    setCharacterPosOffScreen(ref collectibleObjectsList, i);
+                    currentCollectiblesOnScreen--;
+
+                    score += powerUpScoreWorth * scoreMultiplier;
+                }
+                if (collectibleObjectsList[i].texturesArray == expanderImages && collectibleObjectsList[i].OnIntersect(player.getRec(), ref playerHealth))
+                {
+                    healthSound.Play();
+                    screenEncapsulation.shrinkUniformly(-10);
 
                     setCharacterPosOffScreen(ref collectibleObjectsList, i);
                     currentCollectiblesOnScreen--;
@@ -709,7 +750,8 @@ namespace ChaosRunner
         public void setEnemyStartingPos(ref List<BaseEnemy> enemyToMove, int index)
         {
             enemyToMove[index].setRecX(enemyStartingX + rand.Next(10, 280));
-            enemyToMove[index].setRecY(rand.Next(screenEncapsulation.getRec().Top, screenEncapsulation.getRec().Bottom - defaultCharacterHeight));
+            enemyToMove[index].setRecY(rand.Next(screenEncapsulation.getRec().Top +
+                defaultCharacterHeight, screenEncapsulation.getRec().Bottom - defaultCharacterHeight));
             //enemyToMove[index].setRec()
 
 

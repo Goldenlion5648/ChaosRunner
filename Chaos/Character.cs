@@ -127,7 +127,7 @@ namespace ChaosRunner
         public void shrinkUniformly(int amountToShrinkEachSide)
         {
 
-            if (characterRec.Width > (double)(1.4 * (double)characterRec.Height))
+            if (amountToShrinkEachSide < 0 || characterRec.Width > (double)(1.4 * (double)characterRec.Height))
             {
                 characterRec.X += amountToShrinkEachSide;
                 characterRec.Width -= amountToShrinkEachSide * 2;
