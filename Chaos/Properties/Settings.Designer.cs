@@ -25,7 +25,7 @@ namespace Chaos.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("8")]
         public int highScore1 {
             get {
                 return ((int)(this["highScore1"]));
@@ -49,7 +49,7 @@ namespace Chaos.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("75000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("4")]
         public int highScore2 {
             get {
                 return ((int)(this["highScore2"]));
@@ -61,7 +61,7 @@ namespace Chaos.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("30000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public int highScore3 {
             get {
                 return ((int)(this["highScore3"]));

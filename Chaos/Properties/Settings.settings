@@ -3,16 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="highScore1" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">100000</Value>
+      <Value Profile="(Default)">8</Value>
     </Setting>
     <Setting Name="names" Type="System.String" Scope="User">
       <Value Profile="(Default)">ShapeMaster_TimeGuy_Jukes_</Value>
     </Setting>
     <Setting Name="highScore2" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">75000</Value>
+      <Value Profile="(Default)">4</Value>
     </Setting>
     <Setting Name="highScore3" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">30000</Value>
+      <Value Profile="(Default)">2</Value>
     </Setting>
   </Settings>
 </SettingsFile>

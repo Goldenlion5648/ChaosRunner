@@ -75,6 +75,10 @@ namespace ChaosRunner
         {
             characterRec.Width = newValue;
         }
+        public void setRecHeight(int newValue)
+        {
+            characterRec.Height = newValue;
+        }
         public virtual void setRecX(int newValue)
         {
             characterRec.X = newValue;
